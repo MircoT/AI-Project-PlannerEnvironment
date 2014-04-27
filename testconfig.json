@@ -1,0 +1,47 @@
+{
+	"initial_status": {
+		"airports": 3,
+		"airplanes": 3,
+		"boxes": 15,
+		"edges": {
+			"Airport_1": {
+				"Airport_2": 5,
+				"Airport_3": 10
+			},
+			"Airport_2": {
+				"Airport_3": 25
+			}
+		},
+		"vertices": {
+			"Airport_1": {
+				"position": [3, 3],
+				"boxes": ["Box_1", "Box_2", "Box_3"],
+				"airplanes": {
+					"Airplane_1": {
+						"maxbox": 15,
+						"boxes": ["Box_4", "Box_5"]
+					}
+				}
+			},
+			"Airport_2": {
+				"position": [5, 5],
+				"boxes": ["Box_6", "Box_7", "Box_8"],
+				"airplanes": {
+					"Airplane_2": {
+						"maxbox": 15,
+						"boxes": ["Box_9", "Box_10"]
+					},
+					"Airplane_3": {
+						"maxbox": 15,
+						"boxes": ["Box_14", "Box_15"]
+					}
+				}
+			},
+			"Airport_3": {
+				"position": [7, 7],
+				"boxes": ["Box_11", "Box_12", "Box_13"]
+			}
+		}
+	},
+	"goal": ["Box_11, Box_12 in Airport_3", "Box_7 in Airplane_3", "Airplane_2 in Airport_1", "Box_4 in Airport_1"]
+}

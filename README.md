@@ -7,6 +7,11 @@ An environment to test a planner agent, created for a college course.
 
 All you need is python. This module is tested on python 2.7.5 and 3.3.2 .
 
+## Contributing
+
+Contributions are welcome, so please feel free to fix bugs, improve things, provide documentation. 
+For anything submit a personal message or fork the project to make a pull request and so on... thanks!
+
 ## Notes
 
 This library is under eavily development, so there may be substantial changes in the near future.  

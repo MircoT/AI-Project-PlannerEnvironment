@@ -1,13 +1,12 @@
 # -*- encoding: utf-8 -*-
 import json
 import codecs
-import errorObjs
+from errorObjs import *
 from collections import namedtuple
 
 __all__ = ["LogEnvironment", "LogAgent"]
 
 Position = namedtuple('position', ['x', 'y'])
-
 
 class Box(object):
 

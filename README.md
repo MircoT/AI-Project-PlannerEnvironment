@@ -14,7 +14,7 @@ For anything submit a personal message or fork the project to make a pull reques
 
 ## Notes
 
-This library is under eavily development, so there may be substantial changes in the near future.  
+This library is under heavily development, so there may be substantial changes in the near future.  
 
 You can find an example of utilization of the module in this repo. Detailed instruction will be written soon.
 

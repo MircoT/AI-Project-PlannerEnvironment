@@ -277,7 +277,7 @@ class LogEnvironment(object):
         return string
 
     def __moves(self):
-        """Returns all possible moves from current status."""
+        """Returns a list of all possible moves from current status."""
         list_ = list()
         for airport_name, airport_obj in self.airports.items():
             if len(airport_obj.boxes) > 0 and len(airport_obj.airplanes) > 0:

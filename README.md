@@ -1,11 +1,11 @@
 AI-Project-PlannerEnvironment
 =============================
 
-An environment to test a planner agent, created for a college course.
+An environment to test a planner agent, created for a college project and based on a problem from "Artificial Intelligence: A Modern Approach" by Stuart Russell and Peter Norvig.
 
 ## Dependencies
 
-All you need is python. This module is tested on python 2.7.5 and 3.3.2 .
+All you need is python. This module is tested on python 2.7.5 and 3.3.2.
 
 ## Contributing
 

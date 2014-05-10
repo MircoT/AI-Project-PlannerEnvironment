@@ -159,31 +159,6 @@ class DictAttr(dict):
         self.__dict__ = self
 
 
-class EnvironmentStatus(object):
-
-    """Class to manage the status of the environment."""
-
-    def __init__(self, temp_dict):
-        self.__status = DictAttr()
-        for airport_name, obj in temp_dict.items():
-            self.__status[airport_name] = DictAttr()
-            self.__status[airport_name]['position'] = Position(*[
-                obj.position.x, obj.position.y])
-            self.__status[airport_name]['neighbors'] = DictAttr(
-                (key, value) for key, value in obj.neighbors.items())
-            self.__status[airport_name]['boxes'] = [
-                val for val in obj.boxes.keys()]
-            self.__status[airport_name]['airplanes'] = DictAttr()
-            for airplane_name, air_obj in obj.airplanes.items():
-                temp = DictAttr()
-                temp['maxbox'] = air_obj.maxbox
-                temp['boxes'] = [val for val in air_obj.boxes.keys()]
-                self.__status[airport_name]['airplanes'][airplane_name] = temp
-
-    def __getattr__(self, attr):
-        return getattr(self.__status, attr)
-
-
 class LogAgent(object):
 
     """Agent for LogEnvironment"""
@@ -211,7 +186,7 @@ class LogEnvironment(object):
 
     """Class that represent the world for the simulation."""
 
-    def __init__(self, json_file=None):
+    def __init__(self, json_file=None, obj=None):
         self.__allowed_methods = ["load", "unload", "move"]
         self._airports = dict()
         self._airplanes = dict()
@@ -220,6 +195,22 @@ class LogEnvironment(object):
         self._agent = None
         temp_airplanes = dict()
         temp_boxes = dict()
+        if obj is not None and isinstance(obj, LogEnvironment):
+            for box in obj.boxes:
+                self._boxes[box] = Box(box)
+            for airplane, air_obj in obj.airplanes.items():
+                self._airplanes[airplane] = Airplane(airplane, air_obj.maxbox)
+                for box in air_obj.boxes:
+                    self._airplanes[airplane].add_box(self._boxes[box])
+            for airport, airport_obj in obj.airports.items():
+                self._airports[airport] = Airport(airport)
+                self._airports[airport].set_position(airport_obj.position)
+                for box in airport_obj.boxes:
+                    self._airports[airport].add_box(self._boxes[box])
+                for neighbor, weight in airport_obj.neighbors.items():
+                    self._airports[airport].add_link(neighbor, weight)
+            self._goal = [elem for elem in obj.goal]
+            del self._agent
         if json_file is not None:
             with codecs.open(json_file, 'r', 'utf-8') as fsj:
                 config = json.load(fsj)
@@ -256,6 +247,16 @@ class LogEnvironment(object):
                         for string in objs.split(",")]
                 self._goal.append((objs, in_))
             self.verify_goal()
+
+    def __getattr__(self, attr):
+        if attr == "airports":
+            return self._airports
+        elif attr == "airplanes":
+            return self._airplanes
+        elif attr == "boxes":
+            return self._boxes
+        elif attr == "goal":
+            return self._goal
 
     def __repr__(self):
         string = "----- Environment -------\n"
@@ -309,7 +310,7 @@ class LogEnvironment(object):
 
     def get_status(self):
         """Return the current status to the agent."""
-        return EnvironmentStatus(self._airports)
+        return LogEnvironment(obj=self)
 
     def get_goal(self):
         """The the goal status."""

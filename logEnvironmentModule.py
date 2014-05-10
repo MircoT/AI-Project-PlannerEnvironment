@@ -8,6 +8,7 @@ __all__ = ["LogEnvironment", "LogAgent"]
 
 Position = namedtuple('position', ['x', 'y'])
 
+
 class Box(object):
 
     """Class for boxes objects."""
@@ -207,6 +208,9 @@ class LogEnvironment(object):
                 self._airports[airport].set_position(airport_obj.position)
                 for box in airport_obj.boxes:
                     self._airports[airport].add_box(self._boxes[box])
+                for airplane in airport_obj.airplanes:
+                    self._airports[airport].add_airplane(
+                        self._airplanes[airplane])
                 for neighbor, weight in airport_obj.neighbors.items():
                     self._airports[airport].add_link(neighbor, weight)
             self._goal = [elem for elem in obj.goal_list]
@@ -261,6 +265,8 @@ class LogEnvironment(object):
             return self.get_goal()
         elif attr == "clone":
             return self.get_status()
+        elif attr == "moves":
+            return self.__moves()
 
     def __repr__(self):
         string = "----- Environment -------\n"
@@ -269,6 +275,25 @@ class LogEnvironment(object):
             string += "\n"
         string += "-------------------------"
         return string
+
+    def __moves(self):
+        """Returns all possible moves from current status."""
+        list_ = list()
+        for airport_name, airport_obj in self.airports.items():
+            if len(airport_obj.boxes) > 0 and len(airport_obj.airplanes) > 0:
+                for box in airport_obj.boxes:
+                    for airplane in airport_obj.airplanes:
+                        list_.append(("load", box, airplane))
+            if len(airport_obj.airplanes) > 0:
+                for airplane_name, airplane in airport_obj.airplanes.items():
+                    if len(airplane.boxes) > 0:
+                        for box in airplane.boxes:
+                            list_.append(("unload", box, airplane_name))
+                    for airport_target in self.airports:
+                        if airport_target != airport_name:
+                            list_.append(
+                                ("move", airplane_name, airport_name, airport_target))
+        return list_
 
     def __add_edges(self, edges):
         """Add edges."""

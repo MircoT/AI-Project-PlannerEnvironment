@@ -16,6 +16,8 @@ if __name__ == '__main__':
         def solve(self, status, goal):
             print(status)
             print("GOAL:", status.get_goal())
+            import json
+            print(json.dumps(status.moves, indent=4))
             # print("STATUS:", status.Airport_1.airplanes)
             # print("STATUS:", status.Airport_2.airplanes)
             # for airplane in status.Airport_1.airplanes:

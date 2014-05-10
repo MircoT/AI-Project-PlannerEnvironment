@@ -1,0 +1,27 @@
+{
+	"initial_status": {
+		"airports": 2,
+		"airplanes": 1,
+		"boxes": 1,
+		"edges": {
+			"Airport_1": {
+				"Airport_2": 5
+			}
+		},
+		"vertices": {
+			"Airport_1": {
+				"position": [1, 1],
+				"boxes": ["Box_1"],
+				"airplanes": {
+					"Airplane_1": {
+						"maxbox": 15
+					}
+				}
+			},
+			"Airport_2": {
+				"position": [5, 5]
+			}
+		}
+	},
+	"goal": ["Box_1 in Airport_2"]
+}

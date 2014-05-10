@@ -9,6 +9,15 @@ __all__ = ["LogEnvironment", "LogAgent"]
 Position = namedtuple('position', ['x', 'y'])
 
 
+class DictAttr(dict):
+
+    """A special dictionary that can be used with attributes."""
+
+    def __init__(self, *args, **kwargs):
+        super(DictAttr, self).__init__(*args, **kwargs)
+        self.__dict__ = self
+
+
 class Box(object):
 
     """Class for boxes objects."""
@@ -40,7 +49,7 @@ class Airplane(object):
 
     def __init__(self, name=None, maxbox=10):
         self._name = self.__get_name() if name is None else name
-        self._boxes = dict()
+        self._boxes = DictAttr()
         self._maxbox = maxbox
 
     @staticmethod
@@ -91,9 +100,9 @@ class Airport(object):
         self._position = Position(
             0, 0) if position is None else Position(*position)
         self._name = self.__get_name() if name is None else name
-        self._boxes = dict()
-        self._airplanes = dict()
-        self._neighbors = dict()
+        self._boxes = DictAttr()
+        self._airplanes = DictAttr()
+        self._neighbors = DictAttr()
 
     @staticmethod
     def __get_name():
@@ -151,15 +160,6 @@ class Airport(object):
         self._boxes[box.name] = box
 
 
-class DictAttr(dict):
-
-    """A special dictionary that can be used with attributes."""
-
-    def __init__(self, *args, **kwargs):
-        super(DictAttr, self).__init__(*args, **kwargs)
-        self.__dict__ = self
-
-
 class LogAgent(object):
 
     """Agent for LogEnvironment"""
@@ -189,9 +189,9 @@ class LogEnvironment(object):
 
     def __init__(self, json_file=None, obj=None):
         self.__allowed_methods = ["load", "unload", "move"]
-        self._airports = dict()
-        self._airplanes = dict()
-        self._boxes = dict()
+        self._airports = DictAttr()
+        self._airplanes = DictAttr()
+        self._boxes = DictAttr()
         self._goal = list()
         self._agent = None
         temp_airplanes = dict()
@@ -250,7 +250,7 @@ class LogEnvironment(object):
                 objs = [string.strip()
                         for string in objs.split(",")]
                 self._goal.append((objs, in_))
-            self.verify_goal()
+            self.__verify_goal()
 
     def __getattr__(self, attr):
         if attr == "airports":
@@ -267,6 +267,9 @@ class LogEnvironment(object):
             return self.get_status()
         elif attr == "moves":
             return self.__moves()
+
+    def __eq__(self, obj):
+        return self.__repr__() == obj.__repr__()
 
     def __repr__(self):
         string = "----- Environment -------\n"
@@ -328,12 +331,13 @@ class LogEnvironment(object):
                         raise AirplaneAlreadyAssigned(airplane_name)
                     temp_airplanes[airplane_name].set_max_box(
                         airport['airplanes'][airplane_name]['maxbox'])
-                    for box_name in airport['airplanes'][airplane_name]['boxes']:
-                        if box_name in temp_boxes:
-                            temp_airplanes[airplane_name].add_box(
-                                temp_boxes.pop(box_name))
-                        else:
-                            raise BoxAlreadyAssigned(box_name)
+                    if 'boxes' in airport['airplanes'][airplane_name]:
+                        for box_name in airport['airplanes'][airplane_name]['boxes']:
+                            if box_name in temp_boxes:
+                                temp_airplanes[airplane_name].add_box(
+                                    temp_boxes.pop(box_name))
+                            else:
+                                raise BoxAlreadyAssigned(box_name)
                     self._airports[airport_name].add_airplane(
                         temp_airplanes.pop(airplane_name))
 
@@ -348,7 +352,7 @@ class LogEnvironment(object):
             goal[dir_] = [obj for obj in objs]
         return goal
 
-    def verify_goal(self):
+    def __verify_goal(self):
         """Verify if the goal is plausible."""
         temp = dict()
         already_visited = list()
@@ -447,6 +451,8 @@ class LogEnvironment(object):
                         func = getattr(self, method, None)
                         if callable(func):
                             func(*args)
+            else:
+                raise ActionNotAList()
 
     def score(self):
         """Return the agent's score."""

@@ -10,6 +10,14 @@ class Error(Exception):
     pass
 
 
+class ActionNotAList(Error):
+
+    """Exception raised when goal is not plausible."""
+
+    def __str__(self):
+        return "Actions passed is not a list!"
+
+
 class GoalNotPlausible(Error):
 
     """Exception raised when goal is not plausible."""

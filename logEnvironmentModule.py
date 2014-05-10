@@ -440,12 +440,13 @@ class LogEnvironment(object):
                             if callable(func):
                                 func(*args)
         else:
-            for action in list_:
-                method, args = action[0], action[1:]
-                if method in self.__allowed_methods:
-                    func = getattr(self, method, None)
-                    if callable(func):
-                        func(*args)
+            if isinstance(list_, list):
+                for action in list_:
+                    method, args = action[0], action[1:]
+                    if method in self.__allowed_methods:
+                        func = getattr(self, method, None)
+                        if callable(func):
+                            func(*args)
 
     def score(self):
         """Return the agent's score."""

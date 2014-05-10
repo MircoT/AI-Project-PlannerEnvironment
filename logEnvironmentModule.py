@@ -423,11 +423,14 @@ class LogEnvironment(object):
             if getattr(self, "_agent", False):
                 self._agent.score -= 100
         else:
-            self._airports[to_].airplanes[airplane_name] = self._airports[
-                from_].airplanes.pop(airplane_name)
-            if getattr(self, "_agent", False):
-                self._agent.score += 10 * self._airports[to_].edges[from_]
-                self._agent.moves += 1
+            if from_ in self._airports[to_].edges:
+                self._airports[to_].airplanes[airplane_name] = self._airports[
+                    from_].airplanes.pop(airplane_name)
+                if getattr(self, "_agent", False):
+                    self._agent.score += 10 * self._airports[to_].edges[from_]
+                    self._agent.moves += 1
+            else:
+                raise LinkNotExist(from_, to_)
 
     def add_agent(self, agent):
         """Add an agent to the environment."""

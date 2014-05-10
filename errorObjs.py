@@ -68,3 +68,15 @@ class AirplaneAlreadyAssigned(Error):
 
     def __str__(self):
         return "{0} already assigned or not exist!".format(self.name)
+
+
+class LinkNotExist(Error):
+
+    """Exception raised for errors in the assignment of airplanes."""
+
+    def __init__(self, from_, to_):
+        self.from_ = from_
+        self.to_ = to_
+
+    def __str__(self):
+        return "Link from {0} to {1} not exist!".format(self.from_, self.to_)

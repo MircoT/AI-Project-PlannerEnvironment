@@ -53,7 +53,7 @@ if __name__ == '__main__':
             new_clone = clone.clone
 
             print("-->NEW CLONE")
-            print("-->STASUS == CLONE:", status == clone)
+            print("-->STASUS != CLONE:", status != clone)
             print("-->STASUS == NEW_CLONE:", status == new_clone)
             print("-->NEW_CLONE == CLONE:", new_clone == clone)
 

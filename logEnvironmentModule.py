@@ -271,6 +271,9 @@ class LogEnvironment(object):
     def __eq__(self, obj):
         return self.__repr__() == obj.__repr__()
 
+    def __ne__(self, obj):
+        return not self == obj
+
     def __repr__(self):
         string = "----- Environment -------\n"
         for airport_name in sorted(self._airports):

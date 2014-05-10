@@ -376,7 +376,8 @@ class LogEnvironment(object):
         """Load a box in an airplane."""
         if box not in self._boxes or\
                 airplane_name not in self._airplanes:
-            self._agent.score -= 100
+            if getattr(self, "_agent", False):
+                self._agent.score -= 100
         else:
             temp_name = None
             for airport_name, airport in self._airports.items():
@@ -385,14 +386,16 @@ class LogEnvironment(object):
             if box in self._airports[temp_name].boxes:
                 self._airports[temp_name].airplanes[airplane_name].add_box(
                     self._airports[temp_name].boxes.pop(box))
-                self._agent.score += 10
-                self._agent.moves += 1
+                if getattr(self, "_agent", False):
+                    self._agent.score += 10
+                    self._agent.moves += 1
 
     def unload(self, box, airplane_name):
         """Unload a box from an airplane to the airport."""
         if box not in self._boxes or\
                 airplane_name not in self._airplanes:
-            self._agent.score -= 100
+            if getattr(self, "_agent", False):
+                self._agent.score -= 100
         else:
             temp_name = None
             for airport_name, airport in self._airports.items():
@@ -401,37 +404,48 @@ class LogEnvironment(object):
             if box in self._airports[temp_name].airplanes[airplane_name].boxes:
                 self._airports[temp_name].add_box(
                     self._airports[temp_name].airplanes[airplane_name].boxes.pop(box))
-                self._agent.score += 10
-                self._agent.moves += 1
+                if getattr(self, "_agent", False):
+                    self._agent.score += 10
+                    self._agent.moves += 1
 
     def move(self, airplane_name, from_, to_):
         """Move an airplane from an airport to another airport."""
         if from_ not in self._airports or\
             to_ not in self._airports or\
                 airplane_name not in self._airplanes:
-            self._agent.score -= 100
+            if getattr(self, "_agent", False):
+                self._agent.score -= 100
         else:
             self._airports[to_].airplanes[airplane_name] = self._airports[
                 from_].airplanes.pop(airplane_name)
-            self._agent.score += 10 * self._airports[to_].edges[from_]
-            self._agent.moves += 1
+            if getattr(self, "_agent", False):
+                self._agent.score += 10 * self._airports[to_].edges[from_]
+                self._agent.moves += 1
 
     def add_agent(self, agent):
         """Add an agent to the environment."""
         if isinstance(agent, LogAgent):
             self._agent = agent
 
-    def execute(self):
+    def execute(self, list_=None):
         """Execute the solution of the agent."""
-        if self._agent is not None:
-            actions = self._agent.solve(self.get_status(), self.get_goal())
-            if isinstance(actions, list):
-                for action in actions:
-                    method, args = action[0], action[1:]
-                    if method in self.__allowed_methods:
-                        func = getattr(self, method, None)
-                        if callable(func):
-                            func(*args)
+        if getattr(self, "_agent", False):
+            if self._agent is not None:
+                actions = self._agent.solve(self.get_status(), self.get_goal())
+                if isinstance(actions, list):
+                    for action in actions:
+                        method, args = action[0], action[1:]
+                        if method in self.__allowed_methods:
+                            func = getattr(self, method, None)
+                            if callable(func):
+                                func(*args)
+        else:
+            for action in list_:
+                method, args = action[0], action[1:]
+                if method in self.__allowed_methods:
+                    func = getattr(self, method, None)
+                    if callable(func):
+                        func(*args)
 
     def score(self):
         """Return the agent's score."""

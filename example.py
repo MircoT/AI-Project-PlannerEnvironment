@@ -15,9 +15,11 @@ if __name__ == '__main__':
 
         def solve(self, status, goal):
             print(status)
-            print("GOAL:", status.get_goal())
+            print("GOAL:", status.goal)
             import json
             print(json.dumps(status.moves, indent=4))
+            status.execute(status.moves[:2])
+            print(status)
             # print("STATUS:", status.Airport_1.airplanes)
             # print("STATUS:", status.Airport_2.airplanes)
             # for airplane in status.Airport_1.airplanes:

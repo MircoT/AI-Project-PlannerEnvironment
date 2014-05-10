@@ -209,7 +209,7 @@ class LogEnvironment(object):
                     self._airports[airport].add_box(self._boxes[box])
                 for neighbor, weight in airport_obj.neighbors.items():
                     self._airports[airport].add_link(neighbor, weight)
-            self._goal = [elem for elem in obj.goal]
+            self._goal = [elem for elem in obj.goal_list]
             del self._agent
         if json_file is not None:
             with codecs.open(json_file, 'r', 'utf-8') as fsj:
@@ -255,8 +255,12 @@ class LogEnvironment(object):
             return self._airplanes
         elif attr == "boxes":
             return self._boxes
-        elif attr == "goal":
+        elif attr == "goal_list":
             return self._goal
+        elif attr == "goal":
+            return self.get_goal()
+        elif attr == "clone":
+            return self.get_status()
 
     def __repr__(self):
         string = "----- Environment -------\n"

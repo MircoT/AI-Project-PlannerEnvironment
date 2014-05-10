@@ -72,7 +72,7 @@ class AirplaneAlreadyAssigned(Error):
 
 class LinkNotExist(Error):
 
-    """Exception raised for errors in the assignment of airplanes."""
+    """Exception raised when two airport are not linked."""
 
     def __init__(self, from_, to_):
         self.from_ = from_

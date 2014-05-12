@@ -288,15 +288,17 @@ class LogEnvironment(object):
         for airport_name, airport_obj in self.airports.items():
             if len(airport_obj.boxes) > 0 and len(airport_obj.airplanes) > 0:
                 for box in airport_obj.boxes:
-                    for airplane in airport_obj.airplanes:
-                        list_.append(("load", box, airplane))
+                    for airplane_name, airplane in airport_obj.airplanes.items():
+                        if len(airplane.boxes) < airplane.maxbox:
+                            list_.append(("load", box, airplane_name))
             if len(airport_obj.airplanes) > 0:
                 for airplane_name, airplane in airport_obj.airplanes.items():
                     if len(airplane.boxes) > 0:
                         for box in airplane.boxes:
                             list_.append(("unload", box, airplane_name))
                     for airport_target in self.airports:
-                        if airport_target != airport_name:
+                        if airport_target != airport_name and\
+                           airport_target in airport_obj.edges:
                             list_.append(
                                 ("move", airplane_name, airport_name, airport_target))
         return list_

@@ -18,6 +18,22 @@ if __name__ == '__main__':
         
 
         def rec_solve(self, status, goal, list_of_actions):
+            clone = status.clone
+            for move in status.moves:
+                clone.execute([move])
+                list_of_actions.append(move)
+                if clone in self.list_of_statuses:
+                    if len(list_of_actions) > 0:
+                        list_of_actions.pop()
+                    continue
+                self.list_of_statuses.append(clone.clone)
+                if clone.check_goal():
+                    return list_of_actions
+                else:
+                    print("LA:",len(list_of_actions))
+                    print("LS:",len(self.list_of_statuses))
+                    return self.rec_solve(clone, goal, list_of_actions)
+            """ 
             tmpList_of_actions = []
             for move in status.moves:
                 if len(tmpList_of_actions) > 0:
@@ -40,7 +56,7 @@ if __name__ == '__main__':
                 else:
                     print(list_of_actions)
                     return self.rec_solve(clone, goal, list_of_actions)
-                
+            """    
                         
 
             """for move in clone.moves:

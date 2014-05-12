@@ -171,7 +171,7 @@ class LogAgent(object):
     def solve(self, status, goal):
         """Virtual method called from the environment.
 
-        This method must return a list of tuple, like this:
+        This method must return a list of tuples, like this:
 
         [(method name, *args)]
 

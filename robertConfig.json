@@ -1,8 +1,8 @@
 {
 	"initial_status": {
-		"airports": 4,
-		"airplanes": 4,
-		"boxes": 10,
+		"airports": 5,
+		"airplanes": 20,
+		"boxes": 20,
 		"edges": {
 			"Airport_1": {
 				"Airport_2": 20

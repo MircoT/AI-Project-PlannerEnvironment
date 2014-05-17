@@ -179,8 +179,14 @@ class LogAgent(object):
         """
         pass
 
-    def get_score(self):
+    def get_formatted_score(self):
         return "Score of {0} in {1} moves!".format(self.score, self.moves)
+
+    def get_score(self):
+        return self.score
+
+    def get_moves(self):
+        return self.moves
 
 
 class LogEnvironment(object):
@@ -462,6 +468,10 @@ class LogEnvironment(object):
             else:
                 raise ActionNotAList()
 
+    def formatted_score(self):
+        """Return the agent's score and moves number."""
+        return self._agent.get_formatted_score()
+
     def score(self):
-        """Return the agent's score."""
+        """Returns the agent's score."""
         return self._agent.get_score()

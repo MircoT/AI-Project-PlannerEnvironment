@@ -8,7 +8,7 @@ import random
 
 if __name__ == '__main__':
     #test_env = LogEnvironment("testconfig_simple.json")
-    test_env = LogEnvironment("testconfig.json")
+    #test_env = LogEnvironment("testconfig.json")
 
     class MyAgent(LogAgent):
 
@@ -122,9 +122,32 @@ if __name__ == '__main__':
             return self.itr_solve(status)
 
 
-
+    #   you should do this to try your agent only once
+    """
     test_env.add_agent(MyAgent())
     print("MAIN Goal reached:", test_env.check_goal())
     test_env.execute()
     print("MAIN Goal reached:", test_env.check_goal())
-    print("MAIN Agent score:", test_env.score())
+    print("MAIN Agent score:", test_env.formatted_score())
+    """
+
+    #   here I try to run my simple agent many times
+    #   then I get a mean value for the score
+    itrNum = 10
+    partialScore = 0
+    goalAlwaysReached = True
+    i = 0
+    while i < itrNum:
+        asd = LogEnvironment("testconfig_simple.json")
+        asd.add_agent(MyAgent())
+        asd.check_goal()
+        asd.execute()
+        asd.check_goal()
+        if(not asd.check_goal()):
+            goalAlwaysReached = False
+        partialScore += asd.score()
+        i += 1
+    meanScore = partialScore / itrNum
+    print("Mean score is:", meanScore)
+    if(not goalAlwaysReached):
+        print("Goal not always reached")

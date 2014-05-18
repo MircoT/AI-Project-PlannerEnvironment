@@ -22,11 +22,11 @@ To run the application simply execute the main.py file:
 python main.py [-c cfg_list] [-a agents_list]
 ```
 
-*NOTE*:
+**NOTE**:
 * cfg_list is a list of configuration files names.
 * agents_list is a list of agents names.  
 
-Example: 
+*Example*: 
 ```bash
 python main.py -c testconfig_simple.json testconfig.json -a MyAgent
 ```

@@ -1,10 +1,11 @@
 # -*- encoding: utf-8 -*-
+from __future__ import print_function
 import json
 import codecs
 from errorObjs import *
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 
-__all__ = ["LogEnvironment", "LogAgent"]
+__all__ = ["LogEnvManager","LogEnvironment", "LogAgent"]
 
 Position = namedtuple('position', ['x', 'y'])
 
@@ -75,7 +76,7 @@ class Airplane(object):
         for box in sorted(self._boxes.values(),
                           key=lambda obj: obj.name):
             string += "{0}, ".format(box)
-        string = string[:-2] + "]"
+        string = string[:-2] + "]" if len(self._boxes) > 0 else string + "]"
         return string
 
     def set_max_box(self, max_):
@@ -182,12 +183,6 @@ class LogAgent(object):
     def get_formatted_score(self):
         return "Score of {0} in {1} moves!".format(self.score, self.moves)
 
-    def get_score(self):
-        return self.score
-
-    def get_moves(self):
-        return self.moves
-
 
 class LogEnvironment(object):
 
@@ -256,6 +251,10 @@ class LogEnvironment(object):
                 objs = [string.strip()
                         for string in objs.split(",")]
                 self._goal.append((objs, in_))
+            # Reset id creation for multi environments
+            Airport.id_num = 0
+            Airplane.id_num = 0
+            Box.id_num = 0
             self.__verify_goal()
 
     def __getattr__(self, attr):
@@ -474,4 +473,32 @@ class LogEnvironment(object):
 
     def score(self):
         """Returns the agent's score."""
-        return self._agent.get_score()
+        return self._agent.score
+
+
+class LogEnvManager(object):
+
+    """Class to manage multiple environments and agents."""
+
+    def __init__(self, agent_classes, list_of_agents, list_of_environments):
+        self.__data = defaultdict(list)
+        for agent_name in list_of_agents:
+            for environment in list_of_environments:
+                new_env = LogEnvironment(environment)
+                new_env.add_agent(agent_classes[agent_name]())
+                self.__data[agent_name].append((environment, new_env))
+
+    def execute(self):
+        """Execute for every agent every environment."""
+        for env_l in self.__data.values():
+            for env_t in env_l:
+                env_t[1].execute()
+
+    def get_score(self):
+        """Show all results."""
+        print("!!! Score !!!")
+        for agent_name, env_l in self.__data.items():
+            print("Agent: {0} -----".format(agent_name))
+            for env_name, env in env_l:
+                print("\t- {0} -> {1}".format(env_name, env.formatted_score()))
+            print("EndAgent -----")

@@ -1,22 +1,17 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function, unicode_literals
-from logEnvironmentModule import *
-from errorObjs import *
-
+from . logEnvironmentModule import *
+from . errorObjs import *
 import random
 
 
-if __name__ == '__main__':
-    #test_env = LogEnvironment("testconfig_simple.json")
-    #test_env = LogEnvironment("testconfig.json")
-
-    class MyAgent(LogAgent):
+class MyAgent(LogAgent):
 
         """Test the LogAgent."""
 
         def __init__(self):
             super(MyAgent, self).__init__()
-        
+
         def itr_solve(self, status):
             stat = status.clone
             h = 0
@@ -48,21 +43,21 @@ if __name__ == '__main__':
             http://www.urticator.net/essay/3/326.html
             '''
             results = 0
-            #print("eccomi!",status.airports)
+            # print("eccomi!",status.airports)
             for destination, objs in goal.items():
                 #print('SUPER WHAT?!', objs, destination)
                 if destination in list(status.airports.keys()):
                     for obj in objs:
-                        #print('WHAT?!',obj)
+                        # print('WHAT?!',obj)
                         if obj in status.airports[destination]:
-                            results = results + 5 
+                            results = results + 5
                 elif destination in list(status.airplanes.keys()):
                     for obj in objs:
-                        #print('WHAT?!',obj)
+                        # print('WHAT?!',obj)
                         if obj in status.airplanes[destination]:
                             results = results + 5
-            print('heuristic',results)       
-            return results                                   
+            print('heuristic', results)
+            return results
 
         def solve(self, status, goal):
             '''
@@ -103,10 +98,10 @@ if __name__ == '__main__':
                 print(status.goal[goal])
                 print(dir(status.goal[goal]))
                 print(status.goal[goal])'''
-            
+
             #   This is a small code snippet to show you how to
             #   hash() a state. It could be usefull to someone..
-            
+
             """
             print(status.clone)
             print(hash(print(status.clone)))
@@ -118,36 +113,109 @@ if __name__ == '__main__':
             print(clone)
             print(clone == status)
             #print(status.moves)"""
-            
+
             return self.itr_solve(status)
 
 
-    #   you should do this to try your agent only once
-    """
-    test_env.add_agent(MyAgent())
-    print("MAIN Goal reached:", test_env.check_goal())
-    test_env.execute()
-    print("MAIN Goal reached:", test_env.check_goal())
-    print("MAIN Agent score:", test_env.formatted_score())
-    """
+# #   you should do this to try your agent only once
+# """
+# test_env.add_agent(MyAgent())
+# print("MAIN Goal reached:", test_env.check_goal())
+# test_env.execute()
+# print("MAIN Goal reached:", test_env.check_goal())
+# print("MAIN Agent score:", test_env.formatted_score())
+# """
 
-    #   here I try to run my simple agent many times
-    #   then I get a mean value for the score
-    itrNum = 10
-    partialScore = 0
-    goalAlwaysReached = True
-    i = 0
-    while i < itrNum:
-        asd = LogEnvironment("testconfig_simple.json")
-        asd.add_agent(MyAgent())
-        asd.check_goal()
-        asd.execute()
-        asd.check_goal()
-        if(not asd.check_goal()):
-            goalAlwaysReached = False
-        partialScore += asd.score()
-        i += 1
-    meanScore = partialScore / itrNum
-    print("Mean score is:", meanScore)
-    if(not goalAlwaysReached):
-        print("Goal not always reached")
+# #   here I try to run my simple agent many times
+# #   then I get a mean value for the score
+# itrNum = 10
+# partialScore = 0
+# goalAlwaysReached = True
+# i = 0
+# while i < itrNum:
+#     asd = LogEnvironment("testconfig_simple.json")
+#     asd.add_agent(MyAgent())
+#     asd.check_goal()
+#     asd.execute()
+#     asd.check_goal()
+#     if(not asd.check_goal()):
+#         goalAlwaysReached = False
+#     partialScore += asd.score()
+#     i += 1
+# meanScore = partialScore / itrNum
+# print("Mean score is:", meanScore)
+# if(not goalAlwaysReached):
+#     print("Goal not always reached")
+
+
+
+# OLD EXAMPLE
+
+# class MyAgent(LogAgent):
+
+#     """Test the LogAgent."""
+
+#     def __init__(self):
+#         super(MyAgent, self).__init__()
+
+#     def solve(self, status, goal):
+#         clone = status.clone
+#         print("----- Print of CLONE -----")
+#         print(clone)
+#         print("CLONE AIRPORTS:", clone.airports)
+#         print("CLONE AIRPLANES:", clone.airplanes)
+#         print("CLONE BOXES:", clone.boxes)
+#         print("-------------------------")
+
+#         print("----- Print details of CLONE -----")
+#         for airport in clone.airports:
+#             print(airport)
+#         for airport_name, airport_obj in clone.airports.items():
+#             print("AIRPORT NAME:", airport_name)
+#             print(airport_obj)
+#         for box in clone.airports.Airport_1.boxes:
+#             print("BOX NAME", box)
+#         for airplane in clone.airports.Airport_1.airplanes:
+#             print("AIRPLANE NAME:", airplane)
+#         for box in clone.airports.Airport_1.airplanes.Airplane_1.boxes:
+#             print("BOX NAME", box)
+#         print("-------------------------")
+
+#         print("-->STASUS == CLONE:", status == clone)
+#         print("-->GOAL:", status.goal)
+#         print("-->CLONE MOVES:", clone.moves)
+
+#         list_of_actions = [action for action in clone.moves]
+
+#         print("-->EXECUTE MOVES IN CLONE:", list_of_actions)
+
+#         clone.execute(list_of_actions)
+
+#         print("-->STASUS == CLONE:", status == clone)
+#         print("-->CHECK GOAL IN CLONE:", clone.check_goal())
+
+#         new_clone = clone.clone
+
+#         print("-->NEW CLONE")
+#         print("-->STASUS != CLONE:", status != clone)
+#         print("-->STASUS == NEW_CLONE:", status == new_clone)
+#         print("-->NEW_CLONE == CLONE:", new_clone == clone)
+
+#         for box in clone.airports.Airport_2.airplanes.Airplane_1.boxes:
+#             print("-->BOX in Airplane_1 in Airport_2:", box)
+
+#         print("-->NEW_CLONE MOVES:", new_clone.moves)
+#         print("-->LAST MOVE CHECK:",
+#               new_clone.moves[0] == ("unload", "Box_1", "Airplane_1"))
+
+#         try:
+#             new_clone.execute(("unload", "Box_1", "Airplane_1"))
+#         except ActionNotAList as e:
+#             print("-->!!! ERROR:", e)
+#             new_clone.execute([("unload", "Box_1", "Airplane_1")])
+
+#         print("-->CHECK GOAL IN NEW_CLONE", new_clone.check_goal())
+#         print("-------------------------")
+
+#         list_of_actions.append(("unload", "Box_1", "Airplane_1"))
+#         return list_of_actions

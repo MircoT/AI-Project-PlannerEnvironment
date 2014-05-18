@@ -5,6 +5,7 @@ from agents_dir.errorObjs import *
 from agent_list import *
 from sys import argv
 from glob import glob
+from os import path
 
 
 def parse_args(list_, first, second):
@@ -34,8 +35,8 @@ if __name__ == '__main__':
     AGENTS_LIST = ALL_AGENTS.keys()
     ENVS_LIST = glob("cfg_dir/*.json")
     AGENTS_LIST = parse_args(AGENTS_LIST, AGENTS, CONFIG)
-    ENVS_LIST = ["cfg_dir/" + env for env in parse_args(
-        [env.replace("cfg_dir/", "") for env in ENVS_LIST], CONFIG, AGENTS)]
+    ENVS_LIST = [path.join("cfg_dir", env) for env in parse_args(
+        [path.basename(env) for env in ENVS_LIST], CONFIG, AGENTS)]
 
     ENV = LogEnvManager(
         ALL_AGENTS, AGENTS_LIST, ENVS_LIST)

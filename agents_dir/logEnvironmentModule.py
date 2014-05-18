@@ -401,7 +401,7 @@ class LogEnvironment(object):
                 self._airports[temp_name].airplanes[airplane_name].add_box(
                     self._airports[temp_name].boxes.pop(box))
                 if getattr(self, "_agent", False):
-                    self._agent.score += 10
+                    self._agent.score += 15
                     self._agent.moves += 1
 
     def unload(self, box, airplane_name):

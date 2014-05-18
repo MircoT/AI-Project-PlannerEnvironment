@@ -2,7 +2,7 @@
 from __future__ import print_function
 import json
 import codecs
-from errorObjs import *
+from . errorObjs import *
 from collections import namedtuple, defaultdict
 
 __all__ = ["LogEnvManager","LogEnvironment", "LogAgent"]

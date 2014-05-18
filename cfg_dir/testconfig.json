@@ -1,6 +1,6 @@
 {
 	"initial_status": {
-		"airports": 3,
+		"airports": 4,
 		"airplanes": 3,
 		"boxes": 15,
 		"edges": {
@@ -10,6 +10,9 @@
 			},
 			"Airport_2": {
 				"Airport_3": 25
+			},
+			"Airport_3": {
+				"Airport_4": 25
 			}
 		},
 		"vertices": {
@@ -40,8 +43,11 @@
 			"Airport_3": {
 				"position": [7, 7],
 				"boxes": ["Box_11", "Box_12", "Box_13"]
+			},
+			"Airport_4": {
+				"position": [9, 9]
 			}
 		}
 	},
-	"goal": ["Box_11, Box_12 in Airport_3", "Box_7 in Airplane_3", "Airplane_2 in Airport_1", "Box_4 in Airport_1"]
+	"goal": ["Box_11, Box_12 in Airport_3", "Box_7 in Airplane_3", "Airplane_2 in Airport_1", "Box_4 in Airport_4"]
 }

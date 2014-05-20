@@ -93,6 +93,8 @@ class EVA02(LogAgent):
         output_moves = []
         start_hash = hash(repr(stat))
         foundEarlier = None
+        if start_hash not in stateMap:
+            stateMap[start_hash] = []
         #stateMap = { start_hash: []}
         i = 0
         maxDepth = 4
@@ -102,7 +104,7 @@ class EVA02(LogAgent):
                 #################
                 #stat = status.clone
                 stat = clone.clone
-                print("Searching:", "*"*i)
+                print("\r\t", "Searching:", "*"*i, end='')
                 i = 0
                 resetLimit = resetLimit*1.3
                 if resetLimit > maxDepth:
@@ -112,6 +114,8 @@ class EVA02(LogAgent):
                     resetLimit = 1
                     maxDepth += 1
             curr_hash = hash(repr(stat))
+            if curr_hash not in stateMap:
+                stateMap[curr_hash] = []
             for move in stat.moves:
                 #print(move)
                 relevance = self.get_relevance(status, relevant_objs, move) 
@@ -122,6 +126,7 @@ class EVA02(LogAgent):
                     clone = stat.clone
                     clone.execute([move])
                     child_hash = hash(repr(clone))
+                    #print("test")
                     if child_hash not in stateMap[curr_hash]:
                         stateMap[curr_hash].append(child_hash)
                         if move not in new_moves:
@@ -130,7 +135,7 @@ class EVA02(LogAgent):
                         stateMap[child_hash] = []
                         stateMap[child_hash].append(curr_hash)
                     if clone.check_goal():
-                        print("OGMOMGOMGOMGOMGOMGOMG")
+                        #print("OGMOMGOMGOMGOMGOMGOMG")
                         foundEarlier = move
                         break
                 #print("no relevant move!!!!")

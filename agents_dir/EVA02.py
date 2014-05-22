@@ -134,11 +134,16 @@ class EVA02(LogAgent):
                     if child_hash not in stateMap:
                         stateMap[child_hash] = []
                         stateMap[child_hash].append(curr_hash)
+                    if len(stateMap[child_hash]) < 10:
+                        if move not in new_moves:
+                            new_moves.append(move)
                     if clone.check_goal():
                         #print("OGMOMGOMGOMGOMGOMGOMG")
                         foundEarlier = move
                         break
+                    #print("moves len", len(clone.moves))
                 #print("no relevant move!!!!")
+            #print(len(relevant_moves), len(new_moves))
             #print("number of relevances", relevants)
             #print("mmmm", i)
             if foundEarlier:
@@ -165,21 +170,24 @@ class EVA02(LogAgent):
 
     def discovery_backwards(self, status, stateMap, start_hash, curr_hash):
         stat = status.clone
+        goal_childs = len(status.moves)
         new_moves = []
         i = 0
         limiter = 0
+        maxLimiter = 400
         resetLimit = 2
         #curr_hash = goal_hash
         while curr_hash != start_hash:
             if i > resetLimit:
                 stat = status.clone
                 i = 0
-                resetLimit = resetLimit*8
+                resetLimit = resetLimit*4
                 if resetLimit > 16:
                     resetLimit = 2
-                    print( "\r", "Going back a little:", limiter,"%", end='')
+                    perc = int((limiter/maxLimiter)*100)
+                    print( "\r", "Going back a little:", perc,"%", end='')
                     limiter = limiter + 1
-                if limiter > 100:
+                if limiter > maxLimiter:
                     print("Limit break reached!")
                     break
             curr_hash = hash(repr(stat))
@@ -194,6 +202,14 @@ class EVA02(LogAgent):
                 if child_hash not in stateMap:
                     stateMap[child_hash] = []
                     stateMap[child_hash].append(curr_hash)
+                if len(stateMap[child_hash]) < goal_childs:
+                        #if the node was never really explored....
+                        for i in range(10):
+                            new_moves.append(move)
+                if curr_hash == start_hash:
+                        print("OGMOMGOMGOMGOMGOMGOMG")
+                        foundEarlier = move
+                        break
             if(len(new_moves) > 0):
                 move = random.choice(new_moves)
             else:
@@ -212,18 +228,22 @@ class EVA02(LogAgent):
         #print(relevant_objs)
         start_hash = hash(repr(status))
         stateMap = {start_hash: []}
-        for x in range(3):
+        tmp = self.discovery_forwards(status.clone, relevant_objs, stateMap)
+        #{'statemap': statemap, 'goal_hash': goal_hash, 'goal_state': goal_state, 'start_hash': start_hash}
+        stateMap = tmp["stateMap"]
+        goal_state = tmp["goal_state"]
+        start_hash = tmp["start_hash"]
+        goal_hash = tmp["goal_hash"]
+        for x in range(int(len(goal_state.moves)/2)):
             tmp = self.discovery_forwards(status.clone, relevant_objs, stateMap)
             #{'statemap': statemap, 'goal_hash': goal_hash, 'goal_state': goal_state, 'start_hash': start_hash}
             stateMap = tmp["stateMap"]
-            goal_hash = tmp["goal_hash"]
-            goal_state = tmp["goal_state"]
-            start_hash = tmp["start_hash"]
-            stat = tmp['stat']
+            #stat = tmp['stat']
         #asdasd
         stateMap = self.discovery_backwards(goal_state.clone, stateMap, start_hash, goal_hash)
         print("Finding path with minum number of steps")
         best_path = self.search_shortest_path(stateMap, start_hash, goal_hash)
+        print(best_path)
         #print(start_hash, goal_hash)
         #best_path.pop()
         #print("best_path",best_path)
@@ -248,6 +268,8 @@ class EVA02(LogAgent):
 
             #i = i + 1
         #print(output_moves)
+        for move in output_moves:
+            print(move)
         return output_moves
 
     def search_shortest_path(self, graph, start, goal):

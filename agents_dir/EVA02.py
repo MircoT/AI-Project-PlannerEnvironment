@@ -174,7 +174,7 @@ class EVA02(LogAgent):
         new_moves = []
         i = 0
         limiter = 0
-        maxLimiter = 400
+        maxLimiter = 100
         resetLimit = 2
         #curr_hash = goal_hash
         while curr_hash != start_hash:
@@ -202,9 +202,9 @@ class EVA02(LogAgent):
                 if child_hash not in stateMap:
                     stateMap[child_hash] = []
                     stateMap[child_hash].append(curr_hash)
-                if len(stateMap[child_hash]) < goal_childs:
+                if len(stateMap[child_hash]) < goal_childs/2:
                         #if the node was never really explored....
-                        for i in range(10):
+                        for i in range(20):
                             new_moves.append(move)
                 if curr_hash == start_hash:
                         print("OGMOMGOMGOMGOMGOMGOMG")
@@ -228,22 +228,33 @@ class EVA02(LogAgent):
         #print(relevant_objs)
         start_hash = hash(repr(status))
         stateMap = {start_hash: []}
+        goal_hash = []
+        goal_state = []
+        best_path = []
         tmp = self.discovery_forwards(status.clone, relevant_objs, stateMap)
         #{'statemap': statemap, 'goal_hash': goal_hash, 'goal_state': goal_state, 'start_hash': start_hash}
         stateMap = tmp["stateMap"]
-        goal_state = tmp["goal_state"]
+        goal_state.append(tmp["goal_state"])
         start_hash = tmp["start_hash"]
-        goal_hash = tmp["goal_hash"]
-        for x in range(int(len(goal_state.moves)/2)):
+        goal_hash.append(tmp["goal_hash"])
+        for x in range(int(len(goal_state[0].moves))):
             tmp = self.discovery_forwards(status.clone, relevant_objs, stateMap)
             #{'statemap': statemap, 'goal_hash': goal_hash, 'goal_state': goal_state, 'start_hash': start_hash}
             stateMap = tmp["stateMap"]
-            #stat = tmp['stat']
+            if tmp["goal_state"] not in goal_state:
+                goal_state.append(tmp["goal_state"])
+            if tmp["goal_hash"] not in goal_hash:
+                goal_hash.append(tmp["goal_hash"])
+            #print(goal_hash)
         #asdasd
-        stateMap = self.discovery_backwards(goal_state.clone, stateMap, start_hash, goal_hash)
-        print("Finding path with minum number of steps")
-        best_path = self.search_shortest_path(stateMap, start_hash, goal_hash)
-        print(best_path)
+        #for i in range(len(goal_hash)):
+        #    stateMap = self.discovery_backwards(goal_state[i].clone, stateMap, start_hash, goal_hash[i])
+        print("Finding path with minimum number of steps")
+        for i in range(len(goal_hash)):
+            best_path.append(self.search_shortest_path(stateMap, start_hash, goal_hash[i]))
+        for i in range(len(best_path)):
+            print("Len of possible short path:", len(best_path[i]))
+        best_path = min(best_path, key=len)
         #print(start_hash, goal_hash)
         #best_path.pop()
         #print("best_path",best_path)
@@ -313,47 +324,4 @@ class EVA02(LogAgent):
         raise NotFound('No path from {} to {}'.format(start, goal))                
 
     def solve(self, status, goal):        
-        """
-                                print(status)
-                                print(goal)
-                                print(status.moves)
-                                return 
-                                """
         return self.itr_solve(status)
-"""
-itrNum = 10
-partialScore = 0
-goalAlwaysReached = True
-i = itrNum - 1
-asd = LogEnvironment("testconfig.json")
-asd.add_agent(MyAgent())
-print(asd.check_goal())
-asd.execute()
-print("Goal reached?:",asd.check_goal())
-i = 0
-print("score is:", asd.formatted_score())
-while(i<10):
-    asd = asd.clone
-    #print(hash(repr(asd)))
-    #print(hash(repr(asd.clone)))
-    i = i+1
-"""
-
-"""
-while i < itrNum:
-    asd = test_env  
-    asd.add_agent(MyAgent())
-    asd.check_goal()
-    asd.execute()
-    asd.check_goal()
-    if(not asd.check_goal()):
-        goalAlwaysReached = False
-    print("score is:", asd.formatted_score())
-    partialScore += asd.score()
-    asd = None
-    i += 1
-meanScore = partialScore / itrNum
-print("Mean score is:", meanScore)
-if(not goalAlwaysReached):
-    print("Goal not always reached")
-"""

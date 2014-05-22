@@ -2,9 +2,10 @@
 from __future__ import print_function, unicode_literals
 from . logEnvironmentModule import *
 from . errorObjs import *
+from collections import namedtuple
 
 __all__ = ["DijPlanner"]
-
+TargetT = namedtuple("TargetT", ["obj", "t_place"])
 
 class DijPlanner(LogAgent):
 
@@ -30,36 +31,6 @@ class DijPlanner(LogAgent):
         for place, objs in goal.items():
             if target in objs:
                 return place
-
-    # 1  function Dijkstra(Grafo, sorgente):
-    # 2      For each vertice v in Grafo:                               // Inizializzazione
-    # 3          dist[v] := infinito ;                                  // Distanza iniziale sconosciuta
-    # 4                                                                 // dalla sorgente a v
-    # 5          precedente[v] := nondefinita ;                             // Nodo precedente in un percorso ottimale
-    # 6      end for                                                    // dalla sorgente
-    # 7
-    # 8      dist[sorgente] := 0 ;                                        // Distanza dalla sorgente alla sorgente
-    # 9      Q := L'insieme di tutti i nodi nel Grafo ;                       // Tutti i nodi nel grafo sono
-    # 10                                                                 // Non ottimizzati e quindi stanno in Q
-    # 11      while Q  non è  vuota:                                      // Loop principale
-    # 12          u := vertice in Q with smallest distance in dist[] ;    // Nodo iniziale per il primo caso
-    # 13          rimuovi u da Q ;
-    # 14          if dist[u] = infinito:
-    # 15              break ;                                            // tutti i vertici rimanenti sono
-    # 16          end if                                                 // inaccessibili dal nodo sorgente
-    # 17
-    # 18          For each neighbor v di u:                              // dove v non è ancora stato
-    # 19                                                                 // rimosso da Q.
-    # 20              alt := dist[u] + dist_tra(u, v) ;
-    # 21              if alt < dist[v]:                                  // Rilascia (u,v,a)
-    # 22                  dist[v] := alt ;
-    # 23                  precedente[v] := u ;
-    # 24                  decrease-key v in Q;                           // Riordina v nella coda
-    # 25              end if
-    # 26          end for
-    # 27      end while
-    # 28  return dist;
-    # possiamo terminare la ricerca alla riga 13 se u = destinazione
 
     @staticmethod
     def dijkstra(status, source, target):
@@ -106,24 +77,48 @@ class DijPlanner(LogAgent):
         print("PREV", prev)
 
         result = list()
+        result_points = list()
         tmp = target
         result.append(tmp)
         while prev[tmp] is not None:
             result.append(prev[tmp])
             tmp = prev[tmp]
-        result = [elem for elem in reversed(result)]
+        for elem in reversed(result):
+            result_points.append(dist[elem] + 10)
+        result = list(zip(reversed(result), reversed(result_points)))
         print("RESULT", result)
         return result
+
+    def check_preconditions(self, status, goal, target, path):
+        """Check preconditions.
+
+        returns:
+            -1 : No solution
+             0 : preconditions OK
+             1 : not good start status
+        """
+        if len(path) == 0:
+            return -1
+        elif path[-1][0] != self.where_is(status, self.get_target_place(goal, target), airport_only=True):
+            return -1
+        elif len(status.airplanes) == 0:
+            return -1
+        if target in status.boxes and len(status.airports[self.where_is(status, target, airport_only=True)].airplanes) == 0:
+            return 1
+        return 0
 
     def solve(self, status, goal):
         anction_list = list()
         places = goal.keys()
         targets = [item for list_ in goal.values() for item in list_]
+        targetstuples = [TargetT(item, self.get_target_place(goal, item)) for list_ in goal.values() for item in list_]
         print("places:", places)
         print("targets:", targets)
+        print("targetstuple", targetstuples)
         print("moves", status.moves)
         print("where is? Is in", self.where_is(status, targets[0]))
-        self.dijkstra(status,
+        path = self.dijkstra(status,
                       self.where_is(status, targets[0], airport_only=True),
                       self.where_is(status, self.get_target_place(goal, targets[0]), airport_only=True))
+        print("Precontitions:", self.check_preconditions(status, goal, targets[0], path))
         return anction_list

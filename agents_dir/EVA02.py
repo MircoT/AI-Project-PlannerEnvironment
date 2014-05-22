@@ -8,7 +8,7 @@ from collections import deque
 
 class EVA02(LogAgent):
 
-    """Test the LogAgent."""
+    """EVA02 LogAgent by Robert Parcus, 2014"""
 
     def __init__(self):
         super(EVA02, self).__init__()
@@ -28,8 +28,6 @@ class EVA02(LogAgent):
         airports = 'airports'
         boxes = 'boxes'
         for goal in status.goal:
-            #print('goal',goal)
-            #print('status.goal[goal]',status.goal[goal])
             if goal in status.airplanes:
                 relevant_objs[planes].append(goal)
             if goal in status.airports:
@@ -43,9 +41,6 @@ class EVA02(LogAgent):
 
     def get_relevance(self, status, relevant_objs, move):
         relevance = 0
-        #print(move)
-        #print(relevant_objs)
-        #print(move[1])
         if move[0] == "unload":
             relevance = self.weighted_random([(1,1),(9,0)])
             # if the box is relevant somehow
@@ -73,7 +68,6 @@ class EVA02(LogAgent):
                     if airport in relevant_objs["airports"]:
                         if move[1] in status.airports[airport].boxes:
                             if move[1] in status.goal[airport]:
-                                #print("i work!!!!!!!")
                                 relevance = 0
         else:
             relevance = self.weighted_random([(7,1),(3,0)])
@@ -95,38 +89,29 @@ class EVA02(LogAgent):
         foundEarlier = None
         if start_hash not in stateMap:
             stateMap[start_hash] = []
-        #stateMap = { start_hash: []}
         i = 0
         maxDepth = 4
         resetLimit = 2
         while not stat.check_goal():
             if i > resetLimit:
-                #################
-                #stat = status.clone
                 stat = clone.clone
                 print("\r\t", "Searching:", "*"*i, end='')
                 i = 0
                 resetLimit = resetLimit*1.3
                 if resetLimit > maxDepth:
-                    ###########
                     stat = status.clone
-                    ###########
                     resetLimit = 1
                     maxDepth += 1
             curr_hash = hash(repr(stat))
             if curr_hash not in stateMap:
                 stateMap[curr_hash] = []
             for move in stat.moves:
-                #print(move)
                 relevance = self.get_relevance(status, relevant_objs, move) 
-                #print(relevance)
                 if relevance > 0:
                     relevant_moves.append(move)
-                    #print("sometimes we are relevant")
                     clone = stat.clone
                     clone.execute([move])
                     child_hash = hash(repr(clone))
-                    #print("test")
                     if child_hash not in stateMap[curr_hash]:
                         stateMap[curr_hash].append(child_hash)
                         if move not in new_moves:
@@ -138,14 +123,8 @@ class EVA02(LogAgent):
                         if move not in new_moves:
                             new_moves.append(move)
                     if clone.check_goal():
-                        #print("OGMOMGOMGOMGOMGOMGOMG")
                         foundEarlier = move
                         break
-                    #print("moves len", len(clone.moves))
-                #print("no relevant move!!!!")
-            #print(len(relevant_moves), len(new_moves))
-            #print("number of relevances", relevants)
-            #print("mmmm", i)
             if foundEarlier:
                 move = foundEarlier
             elif(len(new_moves) > 0):
@@ -157,8 +136,6 @@ class EVA02(LogAgent):
                     move = random.choice(relevant_moves)
                 else:
                     move = random.choice(stat.moves)
-            #print(move)
-            #print(move)
             stat.execute([move])
             new_moves = []
             relevant_moves = []
@@ -207,78 +184,61 @@ class EVA02(LogAgent):
                         for i in range(20):
                             new_moves.append(move)
                 if curr_hash == start_hash:
-                        print("OGMOMGOMGOMGOMGOMGOMG")
                         foundEarlier = move
                         break
             if(len(new_moves) > 0):
                 move = random.choice(new_moves)
             else:
-                i = i - 1 #così i non cresce alla fine
+                i = i - 1 
                 move = random.choice(stat.moves)
             stat.execute([move])
             new_moves = []
-            #goal_hash = hash(repr(stat))
             i = i+1
         print(len(stateMap))
         return  stateMap
 
     def itr_solve(self, status):
-        #print(dir(status.goal[goal]))
         relevant_objs = self.get_relevant_objs(status)
-        #print(relevant_objs)
         start_hash = hash(repr(status))
         stateMap = {start_hash: []}
         goal_hash = []
         goal_state = []
         best_path = []
+        output_moves = []
+
         tmp = self.discovery_forwards(status.clone, relevant_objs, stateMap)
-        #{'statemap': statemap, 'goal_hash': goal_hash, 'goal_state': goal_state, 'start_hash': start_hash}
         stateMap = tmp["stateMap"]
         goal_state.append(tmp["goal_state"])
         start_hash = tmp["start_hash"]
         goal_hash.append(tmp["goal_hash"])
         for x in range(int(len(goal_state[0].moves))):
             tmp = self.discovery_forwards(status.clone, relevant_objs, stateMap)
-            #{'statemap': statemap, 'goal_hash': goal_hash, 'goal_state': goal_state, 'start_hash': start_hash}
             stateMap = tmp["stateMap"]
             if tmp["goal_state"] not in goal_state:
                 goal_state.append(tmp["goal_state"])
             if tmp["goal_hash"] not in goal_hash:
                 goal_hash.append(tmp["goal_hash"])
-            #print(goal_hash)
-        #asdasd
-        #for i in range(len(goal_hash)):
-        #    stateMap = self.discovery_backwards(goal_state[i].clone, stateMap, start_hash, goal_hash[i])
+
+        for i in range(len(goal_hash)):
+            stateMap = self.discovery_backwards(goal_state[i].clone, stateMap, start_hash, goal_hash[i])
+
         print("Finding path with minimum number of steps")
         for i in range(len(goal_hash)):
             best_path.append(self.search_shortest_path(stateMap, start_hash, goal_hash[i]))
-        for i in range(len(best_path)):
-            print("Len of possible short path:", len(best_path[i]))
+        #for i in range(len(best_path)):
+        #    print("Len of possible short path:", len(best_path[i]))
         best_path = min(best_path, key=len)
-        #print(start_hash, goal_hash)
-        #best_path.pop()
-        #print("best_path",best_path)
-        i = 1
-        output_moves = []
+
         clone = status.clone
-        #print("should be True", start_hash == hash(repr(clone)))
         for i in range(1, len(best_path)):
-            #print(i)
             stat = clone.clone
-            #print("lista",stat.moves)
             for move in stat.moves:
-                #print("each move:", move)
                 clone = stat.clone
                 clone.execute([move])
                 child_hash = hash(repr(clone))
-                #print(best_path[i], child_hash)
                 if best_path[i] == child_hash:
-                    #print("hey!")
                     output_moves.append(move)
                     break
-
-            #i = i + 1
-        #print(output_moves)
         for move in output_moves:
             print(move)
         return output_moves

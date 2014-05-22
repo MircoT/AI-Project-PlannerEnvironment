@@ -1,18 +1,23 @@
 {
 	"initial_status": {
-		"airports": 4,
+		"airports": 5,
 		"airplanes": 3,
 		"boxes": 15,
 		"edges": {
 			"Airport_1": {
-				"Airport_2": 5,
 				"Airport_3": 10
 			},
 			"Airport_2": {
-				"Airport_3": 25
+				"Airport_4": 25
 			},
 			"Airport_3": {
-				"Airport_4": 25
+				"Airport_1": 25
+			},
+			"Airport_4": {
+				"Airport_5": 25
+			},
+			"Airport_5": {
+				"Airport_3": 25
 			}
 		},
 		"vertices": {

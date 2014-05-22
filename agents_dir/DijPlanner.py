@@ -14,13 +14,16 @@ class DijPlanner(LogAgent):
         super(DijPlanner, self).__init__()
 
     @staticmethod
-    def where_is(status, item):
+    def where_is(status, item, airport_only=False):
+        print("WHERE IS", item)
+        if item in status.airports:
+            return item
         for airport_name, airport_obj in status.airports.items():
             if item in airport_obj:
                 return airport_name
             for airplane_name, airplane_obj in airport_obj.airplanes.items():
                 if item in airplane_obj:
-                    return (airport_name, airplane_name)
+                    return airplane_name if not airport_only else airport_name
 
     @staticmethod
     def get_target_place(goal, target):
@@ -75,15 +78,15 @@ class DijPlanner(LogAgent):
         dist[source] = 0
         q_nodes = [name for name in status.airports]
 
-        print(source, target)
+        print("SOURCE & TARGET", source, target)
 
         while len(q_nodes) > 0:
-            print(q_nodes)
-            print(dist)
+            print("Q_NODES", q_nodes)
+            print("WHILE DIST", dist)
             smallest = choice(
                 [vert for vert, val in dist.items()
                  if val == min([val_2 for vert_2, val_2 in dist.items() if vert_2 in q_nodes]) and vert in q_nodes])
-            print(smallest)
+            print("Smallest", smallest)
             q_nodes.remove(smallest)
             if smallest == target:
                 break
@@ -99,9 +102,18 @@ class DijPlanner(LogAgent):
                     dist[neighbor] = alt
                     prev[neighbor] = smallest
 
-        print(dist)
-        print(prev)
+        print("DIST", dist)
+        print("PREV", prev)
 
+        result = list()
+        tmp = target
+        result.append(tmp)
+        while prev[tmp] is not None:
+            result.append(prev[tmp])
+            tmp = prev[tmp]
+        result = [elem for elem in reversed(result)]
+        print("RESULT", result)
+        return result
 
     def solve(self, status, goal):
         anction_list = list()
@@ -111,5 +123,7 @@ class DijPlanner(LogAgent):
         print("targets:", targets)
         print("moves", status.moves)
         print("where is? Is in", self.where_is(status, targets[0]))
-        self.dijkstra(status, self.where_is(status, targets[0]), self.get_target_place(goal, targets[0]))
+        self.dijkstra(status,
+                      self.where_is(status, targets[0], airport_only=True),
+                      self.where_is(status, self.get_target_place(goal, targets[0]), airport_only=True))
         return anction_list

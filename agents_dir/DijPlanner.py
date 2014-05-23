@@ -17,7 +17,7 @@ class DijPlanner(LogAgent):
 
     @staticmethod
     def where_is(status, item, airport_only=False):
-        print("WHERE IS", item)
+        print("### WHERE IS", item)
         if item in status.airports:
             return item
         for airport_name, airport_obj in status.airports.items():
@@ -41,6 +41,7 @@ class DijPlanner(LogAgent):
         except ImportError:
             from sys import maxsize as maxint
         from random import choice
+        print("### Dijkstra ---")
         dist = dict()
         prev = dict()
         for airport in status.airports:
@@ -50,15 +51,15 @@ class DijPlanner(LogAgent):
         dist[source] = 0
         q_nodes = [name for name in status.airports]
 
-        print("SOURCE & TARGET", source, target)
+        print("\t- SOURCE & TARGET", source, target)
 
         while len(q_nodes) > 0:
-            print("Q_NODES", q_nodes)
-            print("WHILE DIST", dist)
+            print("\t\t- Q_NODES", q_nodes)
+            print("\t\t- WHILE DIST", dist)
             smallest = choice(
                 [vert for vert, val in dist.items()
                  if val == min([val_2 for vert_2, val_2 in dist.items() if vert_2 in q_nodes]) and vert in q_nodes])
-            print("Smallest", smallest)
+            print("\t\t- Smallest", smallest)
             q_nodes.remove(smallest)
             if smallest == target:
                 break
@@ -66,16 +67,16 @@ class DijPlanner(LogAgent):
                 break
 
             for neighbor, weight in status.airports[smallest].neighbors.items():
-                print("FOR:", neighbor, weight)
+                print("\t\t\t- FOR:", neighbor, weight)
                 alt = dist[smallest] + weight
-                print("ALT:", alt)
+                print("\t\t\t- ALT:", alt)
                 if alt < dist[neighbor]:
-                    print("IF:", alt, dist[neighbor])
+                    print("\t\t\t- IF:", alt, dist[neighbor])
                     dist[neighbor] = alt
                     prev[neighbor] = smallest
 
-        print("DIST", dist)
-        print("PREV", prev)
+        print("\t- DIST", dist)
+        print("\t- PREV", prev)
 
         result = list()
         result_points = list()
@@ -87,7 +88,8 @@ class DijPlanner(LogAgent):
         for elem in reversed(result):
             result_points.append(dist[elem] + 10)
         result = list(zip(reversed(result), reversed(result_points)))
-        print("RESULT", result)
+        print("\t- RESULT", result)
+        print("### ---")
         return result
 
     def check_preconditions(self, status, goal, target, path):
@@ -107,6 +109,10 @@ class DijPlanner(LogAgent):
         if target in status.boxes and len(status.airports[self.where_is(status, target, airport_only=True)].airplanes) == 0:
             return 1
         return 0
+
+    def h_function(self, status, goal, target, path):
+        moves = [(move, 0) for move in status.moves]
+        print(moves)
 
     def solve(self, status, goal):
         anction_list = list()

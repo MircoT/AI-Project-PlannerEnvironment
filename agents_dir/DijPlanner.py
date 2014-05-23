@@ -7,6 +7,7 @@ from collections import namedtuple
 __all__ = ["DijPlanner"]
 TargetT = namedtuple("TargetT", ["obj", "t_place"])
 
+
 class DijPlanner(LogAgent):
 
     """First planner."""

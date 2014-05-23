@@ -3,6 +3,7 @@ from __future__ import print_function, unicode_literals
 from . logEnvironmentModule import *
 from . errorObjs import *
 from collections import namedtuple
+from itertools import permutations
 
 __all__ = ["DijPlanner"]
 TargetT = namedtuple("TargetT", ["obj", "t_place"])
@@ -16,8 +17,8 @@ class DijPlanner(LogAgent):
         super(DijPlanner, self).__init__()
 
     @staticmethod
-    def where_is(status, item, airport_only=False):
-        print("### WHERE IS", item)
+    def where_is(item, status, airport_only=False):
+        print("### WHERE IS", item, "| airport_only:", airport_only)
         if item in status.airports:
             return item
         for airport_name, airport_obj in status.airports.items():
@@ -102,30 +103,65 @@ class DijPlanner(LogAgent):
         """
         if len(path) == 0:
             return -1
-        elif path[-1][0] != self.where_is(status, self.get_target_place(goal, target), airport_only=True):
+        elif path[-1][0] != self.where_is(self.get_target_place(goal, target), status, airport_only=True):
             return -1
         elif len(status.airplanes) == 0:
             return -1
-        if target in status.boxes and len(status.airports[self.where_is(status, target, airport_only=True)].airplanes) == 0:
+        if target in status.boxes and len(status.airports[self.where_is(target, status, airport_only=True)].airplanes) == 0:
             return 1
         return 0
 
-    def h_function(self, status, goal, target, path):
-        moves = [(move, 0) for move in status.moves]
-        print(moves)
+    def h_function(self, status, goal, target, place_t, path):
+        moves = list()
+        place = self.where_is(self.get_target_place(goal, target), status, airport_only=True)
+        real_place = self.where_is(self.get_target_place(goal, target), status)
+        for move in status.moves:
+            print("\t- Move", move)
+            score = 0
+            if target in move:
+                score += 100
+                print("\t\t!!! target IN move !!!")
+            if place in move:
+                score += 25
+                print("\t\t!!! place IN move !!!")
+            if real_place in move:
+                score += 25
+                print("\t\t!!! real_place IN move !!!")
+            if place_t in move:
+                score += 25
+                print("\t\t!!! place_t IN move !!!")
+            for node, dist in path:
+                print("\t\t- node and dist", node, dist)
+                if node in move:
+                    score += dist
+                    print("\t\t\t!!! node IN move !!!")
+            if score != 0:
+                moves.append((move, score))
+        print(sorted(moves, key=lambda elem: elem[1], reverse=True))
+        # print(len(moves), len(permutations(moves)))
+        # for permutation in permutations(moves):
+        #     print(permutation)
 
     def solve(self, status, goal):
         anction_list = list()
-        places = goal.keys()
-        targets = [item for list_ in goal.values() for item in list_]
         targetstuples = [TargetT(item, self.get_target_place(goal, item)) for list_ in goal.values() for item in list_]
-        print("places:", places)
-        print("targets:", targets)
-        print("targetstuple", targetstuples)
-        print("moves", status.moves)
-        print("where is? Is in", self.where_is(status, targets[0]))
-        path = self.dijkstra(status,
-                      self.where_is(status, targets[0], airport_only=True),
-                      self.where_is(status, self.get_target_place(goal, targets[0]), airport_only=True))
-        print("Precontitions:", self.check_preconditions(status, goal, targets[0], path))
+        for target, place_t in targetstuples:
+            print("##### TARGET and PLACE #####", target, place_t)
+            dij_source = self.where_is(target, status, airport_only=True)
+            dij_target = self.where_is(target, status, airport_only=True)
+            path = self.dijkstra(status, dij_source, dij_target)
+            print("### Dijkstra path", path)
+            prec_ret = self.check_preconditions(status, goal, target, path)
+            print("### Precontitions return:", prec_ret)
+            if prec_ret == 0:
+                self.h_function(status, goal, target, place_t, path)
+        # print("places:", places)
+        # print("targets:", targets)
+        # print("targetstuple", targetstuples)
+        # print("moves", status.moves)
+        # print("where is? Is in", self.where_is(status, targets[0]))
+        # path = self.dijkstra(status,
+        #               self.where_is(status, targets[0], airport_only=True),
+        #               self.where_is(status, self.get_target_place(goal, targets[0]), airport_only=True))
+        # print("Precontitions:", self.check_preconditions(status, goal, targets[0], path))
         return anction_list

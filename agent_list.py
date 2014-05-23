@@ -21,5 +21,5 @@ for root, dirs, files in walk("agents_dir"):
             clsmembers = inspect.getmembers(MODULES[name], inspect.isclass)
             for class_name, class_ in clsmembers:
                 pkg, mod = path.splitext(class_.__module__)
-                if mod == ".{0}".format(name):
+                if class_name == name:
                     ALL_AGENTS[name] = class_

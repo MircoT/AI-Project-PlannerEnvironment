@@ -43,7 +43,6 @@ class DijPlanner(LogAgent):
             from sys import maxint
         except ImportError:
             from sys import maxsize as maxint
-        from random import choice
         print("### Dijkstra ---")
         dist = dict()
         prev = dict()
@@ -114,6 +113,7 @@ class DijPlanner(LogAgent):
         if len(path) == 0:
             return -1
         elif path[-1][0] != self.where_is(self.get_target_place(goal, target), status, airport_only=True):
+            print(path[-1][0], self.where_is(self.get_target_place(goal, target), status, airport_only=True))
             return -1
         elif len(status.airplanes) == 0:
             return -1
@@ -125,6 +125,7 @@ class DijPlanner(LogAgent):
         moves = list()
         place = self.where_is(
             self.get_target_place(goal, target), status, airport_only=True)
+        print("-------------", place, place_t)
         real_place = self.where_is(self.get_target_place(goal, target), status)
         for move in status.moves:
             print("\t- Move", move)
@@ -150,6 +151,7 @@ class DijPlanner(LogAgent):
                 moves.append((move, score))
         print("\t# Accepted moves:",
               sorted(moves, key=lambda elem: elem[1], reverse=True))
+        return([move for move in sorted(moves, key=lambda elem: elem[1], reverse=True)])
         # print(len(moves), len(permutations(moves)))
         # for permutation in permutations(moves):
         #     print(permutation)
@@ -158,7 +160,7 @@ class DijPlanner(LogAgent):
         tmp_status = status
         print("##### TARGET and PLACE #####", target, place_t)
         dij_source = self.where_is(target, tmp_status, airport_only=True)
-        dij_target = self.where_is(target, tmp_status, airport_only=True)
+        dij_target = self.where_is(place_t, tmp_status, airport_only=True)
         path = self.dijkstra(tmp_status, dij_source, dij_target)
         print("### Dijkstra path", path)
         prec_ret = self.check_preconditions(tmp_status, goal, target, path)
@@ -188,13 +190,14 @@ class DijPlanner(LogAgent):
                 for target, place_t in self.reached_goals:
                     consistency = consistency and self.check_single_goal(
                         target, place_t, clone)
-                if consistency:
+                if consistency and self.check_preconditions(clone, goal, target, path) != -1:
                     tmp_status = clone
                     anction_list.append(next_move)
                 timer += 1
         if prec_ret == -1:
             return None
-        self.h_function(tmp_status, goal, target, place_t, path)
+        moves = self.h_function(tmp_status, goal, target, place_t, path)
+
         return tmp_status
 
     def solve(self, status, goal):

@@ -133,6 +133,10 @@ class DijPlanner(LogAgent):
             if target in move:
                 score += 100
                 print("\t\t!!! target IN move !!!")
+                if "load" in move:
+                    score += 10
+                elif "unload" in move:
+                    score -= 10
             if place in move:
                 score += 25
                 print("\t\t!!! place IN move !!!")
@@ -197,8 +201,30 @@ class DijPlanner(LogAgent):
         if prec_ret == -1:
             return None
         moves = self.h_function(tmp_status, goal, target, place_t, path)
-
+        tmp_action_list = self.__resolve(moves, tmp_status.clone, goal, target, place_t, path)
+        print(tmp_action_list)
         return tmp_status
+
+    def __resolve(self, moves, status, goal, target, place_t, path, anction_list=[]):
+        from time import sleep
+        print(moves)
+        action, value = moves.pop(0)
+        print(status)
+        status.execute([action])
+        print(status)
+        print(status.check_goal())
+        sleep(2)
+        if status.check_goal():
+            print("GOAL REACHED !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            anction_list.append(action)
+            return [elem for elem in reversed(anction_list)]
+        else:
+            dij_source = self.where_is(target, status, airport_only=True)
+            dij_target = self.where_is(place_t, status, airport_only=True)
+            new_path = self.dijkstra(status, dij_source, dij_target)
+            new_moves = self.h_function(status, goal, target, place_t, new_path)
+            self.__resolve(new_moves, status.clone, goal, target, place_t, new_path)
+        return [elem for elem in reversed(anction_list)]
 
     def solve(self, status, goal):
         print(status)

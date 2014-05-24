@@ -359,7 +359,10 @@ class LogEnvironment(object):
         """The the goal status."""
         goal = DictAttr()
         for objs, dir_ in self._goal:
-            goal[dir_] = [obj for obj in objs]
+            if dir_ in goal:
+                goal[dir_] += [obj for obj in objs]
+            else:
+                goal[dir_] = [obj for obj in objs]
         return goal
 
     def __verify_goal(self):

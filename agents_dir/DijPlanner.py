@@ -142,26 +142,21 @@ class DijPlanner(LogAgent):
         # for permutation in permutations(moves):
         #     print(permutation)
 
+    def resolve(self, status, goal, anction_list, target, place_t):
+        print("##### TARGET and PLACE #####", target, place_t)
+        dij_source = self.where_is(target, status, airport_only=True)
+        dij_target = self.where_is(target, status, airport_only=True)
+        path = self.dijkstra(status, dij_source, dij_target)
+        print("### Dijkstra path", path)
+        prec_ret = self.check_preconditions(status, goal, target, path)
+        print("### Precontitions return:", prec_ret)
+        if prec_ret == 0:
+            self.h_function(status, goal, target, place_t, path)
+
     def solve(self, status, goal):
+        print(goal)
         anction_list = list()
         targetstuples = [TargetT(item, self.get_target_place(goal, item)) for list_ in goal.values() for item in list_]
         for target, place_t in targetstuples:
-            print("##### TARGET and PLACE #####", target, place_t)
-            dij_source = self.where_is(target, status, airport_only=True)
-            dij_target = self.where_is(target, status, airport_only=True)
-            path = self.dijkstra(status, dij_source, dij_target)
-            print("### Dijkstra path", path)
-            prec_ret = self.check_preconditions(status, goal, target, path)
-            print("### Precontitions return:", prec_ret)
-            if prec_ret == 0:
-                self.h_function(status, goal, target, place_t, path)
-        # print("places:", places)
-        # print("targets:", targets)
-        # print("targetstuple", targetstuples)
-        # print("moves", status.moves)
-        # print("where is? Is in", self.where_is(status, targets[0]))
-        # path = self.dijkstra(status,
-        #               self.where_is(status, targets[0], airport_only=True),
-        #               self.where_is(status, self.get_target_place(goal, targets[0]), airport_only=True))
-        # print("Precontitions:", self.check_preconditions(status, goal, targets[0], path))
+            self.resolve(status, goal, anction_list, target, place_t)
         return anction_list

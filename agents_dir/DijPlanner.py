@@ -4,6 +4,7 @@ from . logEnvironmentModule import *
 from . errorObjs import *
 from collections import namedtuple
 from itertools import permutations
+from random import choice
 
 __all__ = ["DijPlanner"]
 TargetT = namedtuple("TargetT", ["obj", "t_place"])
@@ -15,6 +16,7 @@ class DijPlanner(LogAgent):
 
     def __init__(self):
         super(DijPlanner, self).__init__()
+        self.reached_goals = list()
 
     @staticmethod
     def where_is(item, status, airport_only=False):
@@ -93,6 +95,14 @@ class DijPlanner(LogAgent):
         print("### ---")
         return result
 
+    @staticmethod
+    def check_single_goal(target, place_t, status):
+        if place_t in status.airports:
+            return target in status.airports[place_t]
+        elif place_t in status.airplanes:
+            return target in status.airplanes[place_t]
+        return False
+
     def check_preconditions(self, status, goal, target, path):
         """Check preconditions.
 
@@ -113,7 +123,8 @@ class DijPlanner(LogAgent):
 
     def h_function(self, status, goal, target, place_t, path):
         moves = list()
-        place = self.where_is(self.get_target_place(goal, target), status, airport_only=True)
+        place = self.where_is(
+            self.get_target_place(goal, target), status, airport_only=True)
         real_place = self.where_is(self.get_target_place(goal, target), status)
         for move in status.moves:
             print("\t- Move", move)
@@ -137,26 +148,63 @@ class DijPlanner(LogAgent):
                     print("\t\t\t!!! node IN move !!!")
             if score != 0:
                 moves.append((move, score))
-        print(sorted(moves, key=lambda elem: elem[1], reverse=True))
+        print("\t# Accepted moves:",
+              sorted(moves, key=lambda elem: elem[1], reverse=True))
         # print(len(moves), len(permutations(moves)))
         # for permutation in permutations(moves):
         #     print(permutation)
 
     def resolve(self, status, goal, anction_list, target, place_t):
+        tmp_status = status
         print("##### TARGET and PLACE #####", target, place_t)
-        dij_source = self.where_is(target, status, airport_only=True)
-        dij_target = self.where_is(target, status, airport_only=True)
-        path = self.dijkstra(status, dij_source, dij_target)
+        dij_source = self.where_is(target, tmp_status, airport_only=True)
+        dij_target = self.where_is(target, tmp_status, airport_only=True)
+        path = self.dijkstra(tmp_status, dij_source, dij_target)
         print("### Dijkstra path", path)
-        prec_ret = self.check_preconditions(status, goal, target, path)
+        prec_ret = self.check_preconditions(tmp_status, goal, target, path)
         print("### Precontitions return:", prec_ret)
-        if prec_ret == 0:
-            self.h_function(status, goal, target, place_t, path)
+        timer = 0
+        if prec_ret == 1:
+            while self.check_preconditions(tmp_status, goal, target, path) == 1 and timer < 100:
+                moves = list()
+                neighbors = list()
+                for move in tmp_status.moves:
+                    for p_t, val, in path:
+                        if p_t in move:
+                            moves.append(move)
+                            for neighbor in tmp_status.airports[p_t].neighbors:
+                                neighbors.append(neighbor)
+                                for neighbor_2 in tmp_status.airports[neighbor].neighbors:
+                                    neighbors.append(neighbor_2)
+                    for neighbor in neighbors:
+                        if neighbor in move:
+                            moves.append(move)
+                    if place_t in move:
+                        moves.append(move)
+                next_move = choice(moves)
+                clone = tmp_status.clone
+                clone.execute([next_move])
+                consistency = True
+                for target, place_t in self.reached_goals:
+                    consistency = consistency and self.check_single_goal(
+                        target, place_t, clone)
+                if consistency:
+                    tmp_status = clone
+                    anction_list.append(next_move)
+                timer += 1
+        if prec_ret == -1:
+            return None
+        self.h_function(tmp_status, goal, target, place_t, path)
+        return tmp_status
 
     def solve(self, status, goal):
-        print(goal)
+        print(status)
         anction_list = list()
-        targetstuples = [TargetT(item, self.get_target_place(goal, item)) for list_ in goal.values() for item in list_]
+        targetstuples = [TargetT(item, self.get_target_place(goal, item))
+                         for list_ in goal.values() for item in list_]
         for target, place_t in targetstuples:
-            self.resolve(status, goal, anction_list, target, place_t)
+            if status is not None:
+                status = self.resolve(
+                    status, goal, anction_list, target, place_t)
+        print("- #@#@# Action list:", anction_list)
         return anction_list

@@ -1,11 +1,14 @@
 {
 	"initial_status": {
-		"airports": 2,
-		"airplanes": 1,
-		"boxes": 1,
+		"airports": 3,
+		"airplanes": 2,
+		"boxes": 2,
 		"edges": {
 			"Airport_1": {
 				"Airport_2": 5
+			},
+			"Airport_2": {
+				"Airport_3": 5
 			}
 		},
 		"vertices": {
@@ -14,14 +17,23 @@
 				"boxes": ["Box_1"],
 				"airplanes": {
 					"Airplane_1": {
-						"maxbox": 15
+						"boxes": ["Box_2"],
+						"maxbox": 1
 					}
 				}
 			},
 			"Airport_2": {
 				"position": [5, 5]
+			},
+			"Airport_3": {
+				"position": [7, 7],
+				"airplanes": {
+					"Airplane_2": {
+						"maxbox": 15
+					}
+				}
 			}
 		}
 	},
-	"goal": ["Box_1 in Airplane_1"]
+	"goal": ["Box_1 in Airplane_1", "Airplane_1 in Airport_3", "Airplane_2 in Airport_2"]
 }

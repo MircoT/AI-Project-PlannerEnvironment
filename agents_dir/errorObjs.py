@@ -15,7 +15,7 @@ class ActionNotAList(Error):
     """Exception raised when goal is not plausible."""
 
     def __str__(self):
-        return "Actions passed is not a list!"
+        return "Actions passed is not a list or tuple!"
 
 
 class GoalNotPlausible(Error):

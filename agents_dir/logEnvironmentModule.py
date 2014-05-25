@@ -181,8 +181,8 @@ class LogAgent(object):
         """
         pass
 
-    def get_formatted_score(self):
-        return "Score of {0} in {1} moves! {2} goals reached!".format(self.score, self.moves, self.goals)
+    def get_formatted_score(self, num_goals):
+        return "Score of {0} in {1} moves! {2}/{3} goals reached!".format(self.score, self.moves, self.goals, num_goals)
 
 
 class LogEnvironment(object):
@@ -195,6 +195,7 @@ class LogEnvironment(object):
         self._airplanes = DictAttr()
         self._boxes = DictAttr()
         self._goal = list()
+        self.num_goals = 0
         self._agent = None
         temp_airplanes = dict()
         temp_boxes = dict()
@@ -216,6 +217,7 @@ class LogEnvironment(object):
                 for neighbor, weight in airport_obj.neighbors.items():
                     self._airports[airport].add_link(neighbor, weight)
             self._goal = [elem for elem in obj.goal_list]
+            self.num_goals = obj.num_goals
             del self._agent
         if json_file is not None:
             with codecs.open(json_file, 'r', 'utf-8') as fsj:
@@ -251,6 +253,7 @@ class LogEnvironment(object):
                     string.strip() for string in sentence.split("in")]
                 objs = [string.strip()
                         for string in objs.split(",")]
+                self.num_goals += len(objs)
                 self._goal.append((objs, in_))
             # Reset id creation for multi environments
             Airport.id_num = 0
@@ -472,13 +475,20 @@ class LogEnvironment(object):
                         func = getattr(self, method, None)
                         if callable(func):
                             func(*args)
+            elif isinstance(list_, tuple):
+                method, args = list_[0], list_[1:]
+                if method in self.__allowed_methods:
+                    func = getattr(self, method, None)
+                    if callable(func):
+                        func(*args)
             else:
                 raise ActionNotAList()
+        return self
 
     def formatted_score(self):
         """Return the agent's score and moves number."""
         self.check_goal()
-        return self._agent.get_formatted_score()
+        return self._agent.get_formatted_score(self.num_goals)
 
     def score(self):
         """Returns the agent's score."""

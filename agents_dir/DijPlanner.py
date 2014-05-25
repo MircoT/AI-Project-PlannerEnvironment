@@ -185,11 +185,13 @@ class DijPlanner(LogAgent):
         print("### Precontitions return:", prec_ret)
         timer = 0
         if prec_ret == 1:
+            reversed_moves = list()
             while self.check_preconditions(tmp_status, goal, target, path) == 1 and timer < 100:
                 moves = list()
                 neighbors = list()
                 for move in tmp_status.moves:
                     for p_t, val, in path:
+                        print(p_t)
                         if p_t in move:
                             moves.append(move)
                             for neighbor in tmp_status.airports[p_t].neighbors:
@@ -201,6 +203,8 @@ class DijPlanner(LogAgent):
                             moves.append(move)
                     if place_t in move:
                         moves.append(move)
+                if len(moves) == 0:
+                    moves = tmp_status.moves
                 next_move = choice(moves)
                 clone = tmp_status.clone
                 clone.execute([next_move])
@@ -211,6 +215,12 @@ class DijPlanner(LogAgent):
                 if consistency and self.check_preconditions(clone, goal, target, path) != -1:
                     tmp_status = clone
                     anction_list.append(next_move)
+                    if next_move[0] == "load":
+                        reversed_moves.append(("unload", next_move[1], next_move[2]))
+                    elif next_move[0] == "unload":
+                        reversed_moves.append(("load", next_move[1], next_move[2]))
+                    elif next_move[0] == "move":
+                        reversed_moves.append((next_move[0], next_move[1], next_move[3], next_move[2]))
                 timer += 1
         if prec_ret == -1:
             return None

@@ -41,23 +41,40 @@ class EVA02(LogAgent):
 
     def get_relevance(self, status, relevant_objs, move):
         relevance = 0
+        #if we may unload something
         if move[0] == "unload":
             relevance = self.weighted_random([(1,1),(9,0)])
             # if the box is relevant somehow
             if move[1] in relevant_objs["boxes"]:
-                relevance = 2
+                relevance = 1
+            # if the box is not relevant 
+            else:
+                # and the plane has enough space
+                if status.airplanes[move[2]].maxbox > len(status.airplanes[move[2]].boxes):
+                    #why should we ever unload it?
+                    relevance = 0
+                else:
+                    relevance = self.weighted_random([(5,1),(5,0)])
             # if the plane is relevant somehow
             if  move[2] in relevant_objs["planes"]:
-                relevance = 1
+                #relevance = 1
                 #if the box is in the plane it should be
                 if move[1] in status.goal[move[2]]:
-                    relevance = self.weighted_random([(9,1),(1,0)])
-                    #print(relevance)
+                    #relevance = self.weighted_random([(1,1),(9,0)])
+                    # and the plane is not full of boxes
+                    if status.airplanes[move[2]].maxbox > len(status.airplanes[move[2]].boxes):
+                        relevance = 0
         elif move[0] == "load":
             relevance = self.weighted_random([(7,1),(3,0)])
             #if the plane is somehow relevant
             if  move[2] in relevant_objs["planes"]:
-                relevance = 1
+                relevance = self.weighted_random([(7,1),(3,0)])
+                #if this plane should have this box
+                if move[1] in status.goal[move[2]]:
+                    #and there is space for it
+                    if status.airplanes[move[2]].maxbox > len(status.airplanes[move[2]].boxes):
+                        #take it!
+                        relevance = 1
             #if te box is not relevant, never load it!
             if move[1] not in relevant_objs["boxes"]:
                 relevance = 0
@@ -71,6 +88,18 @@ class EVA02(LogAgent):
                                 relevance = 0
         else:
             relevance = self.weighted_random([(7,1),(3,0)])
+            #if the destination aiport is relevant
+            if move[3] in relevant_objs:
+                #if the airplane should go there
+                if move[1] in status.goal[move[3]]:
+                    #you probably want to send it there
+                    relevance = self.weighted_random([(20,1),(1,0)])
+            #if the source aiport is relevant
+            if move[2] in relevant_objs:
+                #if the airplane should stay there
+                if move[1] in status.goal[move[2]]:
+                    #you probably DON'T want to move it
+                    relevance = self.weighted_random([(1,1),(20,0)])   
             """if move[3] in relevant_objs:
                 relevance = relevance + 10
             if move[2] in relevant_objs:
@@ -136,12 +165,21 @@ class EVA02(LogAgent):
                     move = random.choice(relevant_moves)
                 else:
                     move = random.choice(stat.moves)
+            #print(move)
             stat.execute([move])
+            child_hash = hash(repr(stat))
+            #Per sicurezza...
+            if child_hash not in stateMap[curr_hash]:
+                stateMap[curr_hash].append(child_hash)
+            if child_hash not in stateMap:
+                stateMap[child_hash] = []
+                stateMap[child_hash].append(curr_hash)
             new_moves = []
             relevant_moves = []
             goal_state = stat.clone
             goal_hash = hash(repr(stat))
             i = i+1
+        #print(len(stateMap), goal_hash, hash(repr(goal_state)))
         print(len(stateMap))
         return {'stateMap': stateMap, 'goal_hash': goal_hash, 'goal_state': goal_state, 'start_hash': start_hash, 'stat': stat}
 
@@ -211,7 +249,7 @@ class EVA02(LogAgent):
         goal_state.append(tmp["goal_state"])
         start_hash = tmp["start_hash"]
         goal_hash.append(tmp["goal_hash"])
-        for x in range(int(len(goal_state[0].moves))):
+        for x in range(int(len(goal_state[0].moves)/5)):
             tmp = self.discovery_forwards(status.clone, relevant_objs, stateMap)
             stateMap = tmp["stateMap"]
             if tmp["goal_state"] not in goal_state:
@@ -219,10 +257,11 @@ class EVA02(LogAgent):
             if tmp["goal_hash"] not in goal_hash:
                 goal_hash.append(tmp["goal_hash"])
 
-        for i in range(len(goal_hash)):
-            stateMap = self.discovery_backwards(goal_state[i].clone, stateMap, start_hash, goal_hash[i])
+        #for i in range(len(goal_hash)):
+            #stateMap = self.discovery_backwards(goal_state[i].clone, stateMap, start_hash, goal_hash[i])
 
         print("Finding path with minimum number of steps")
+        #print(goal_hash)
         for i in range(len(goal_hash)):
             best_path.append(self.search_shortest_path(stateMap, start_hash, goal_hash[i]))
         #for i in range(len(best_path)):
@@ -281,7 +320,7 @@ class EVA02(LogAgent):
                 if neighbour not in visited:
                     visited[neighbour] = node
                     queue.append(neighbour)
-        raise NotFound('No path from {} to {}'.format(start, goal))                
+        raise self.NotFound('No path from {} to {}'.format(start, goal))                
 
     def solve(self, status, goal):        
         return self.itr_solve(status)

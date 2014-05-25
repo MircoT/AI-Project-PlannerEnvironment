@@ -168,6 +168,7 @@ class LogAgent(object):
     def __init__(self):
         self.score = 0
         self.moves = 0
+        self.goals = 0
 
     def solve(self, status, goal):
         """Virtual method called from the environment.
@@ -181,7 +182,7 @@ class LogAgent(object):
         pass
 
     def get_formatted_score(self):
-        return "Score of {0} in {1} moves!".format(self.score, self.moves)
+        return "Score of {0} in {1} moves! {2} goals reached!".format(self.score, self.moves, self.goals)
 
 
 class LogEnvironment(object):
@@ -384,9 +385,13 @@ class LogEnvironment(object):
             if dir_ in self._airports:
                 for obj in objs:
                     results = results and obj in self._airports[dir_]
+                    if getattr(self, "_agent", False) and obj in self._airports[dir_]:
+                        self._agent.goals += 1
             elif dir_ in self._airplanes:
                 for obj in objs:
                     results = results and obj in self._airplanes[dir_]
+                    if getattr(self, "_agent", False)and obj in self._airplanes[dir_]:
+                        self._agent.goals += 1
         return results
 
     def load(self, box, airplane_name):
@@ -472,6 +477,7 @@ class LogEnvironment(object):
 
     def formatted_score(self):
         """Return the agent's score and moves number."""
+        self.check_goal()
         return self._agent.get_formatted_score()
 
     def score(self):

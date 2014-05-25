@@ -202,6 +202,7 @@ class DijPlanner(LogAgent):
             return None
         moves = self.h_function(tmp_status, goal, target, place_t, path)
         tmp_action_list = self.__resolve(moves, tmp_status.clone, goal, target, place_t, path)
+        anction_list += tmp_action_list
         print(tmp_action_list)
         return tmp_status
 
@@ -213,7 +214,7 @@ class DijPlanner(LogAgent):
         status.execute([action])
         print(status)
         print(status.check_goal())
-        sleep(2)
+        # sleep(2)
         if status.check_goal():
             print("GOAL REACHED !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             anction_list.append(action)

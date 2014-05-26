@@ -387,7 +387,7 @@ class LogEnvironment(object):
         temp_goal = self._goal
         if goal_part is not None:
             if isinstance(goal_part, dict):
-                temp_goal = list(value, key for key, value in goal_part.items())
+                temp_goal = list((value, key) for key, value in goal_part.items())
             elif isinstance(goal_part, list):
                 temp_goal = [(value, key) for key, value in goal_part]
             elif isinstance(goal_part, tuple):
@@ -403,8 +403,6 @@ class LogEnvironment(object):
                     results = results and obj in self._airplanes[dir_]
                     if getattr(self, "_agent", False)and obj in self._airplanes[dir_]:
                         self._agent.goals += 1
-        else:
-            resutl = None
         return results
 
     def load(self, box, airplane_name):

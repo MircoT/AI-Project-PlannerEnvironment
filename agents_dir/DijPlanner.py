@@ -26,15 +26,18 @@ class DijPlanner(LogAgent):
         If airport_only is passed, returns the airport name
         instead the airplane name if the item is on an airplane.
         """
-        print("### WHERE IS", item, "| airport_only:", airport_only)
+        result = None
         if item in status.airports:
-            return item
+            result = item
         for airport_name, airport_obj in status.airports.items():
             if item in airport_obj:
-                return airport_name
+                result = airport_name
             for airplane_name, airplane_obj in airport_obj.airplanes.items():
                 if item in airplane_obj:
-                    return airplane_name if not airport_only else airport_name
+                    result = airplane_name if not airport_only else airport_name
+        print("### WHERE IS", item, "? Is in",
+              result, "| airport_only:", airport_only)
+        return result
 
     @staticmethod
     def get_target_place(goal, target):
@@ -121,7 +124,9 @@ class DijPlanner(LogAgent):
         if len(path) == 0:
             return -1
         elif path[-1][0] != self.where_is(self.get_target_place(goal, target), status, airport_only=True):
-            print(path[-1][0], self.where_is(self.get_target_place(goal, target), status, airport_only=True))
+            print(
+                path[-1][0], self.where_is(self.get_target_place(goal, target),
+                                           status, airport_only=True))
             return -1
         elif len(status.airplanes) == 0:
             return -1
@@ -138,10 +143,11 @@ class DijPlanner(LogAgent):
         Takes the Dijkstra path and some other information to give
         a specific score to the available actions.
         """
+        print("### START h_function ---")
         moves = list()
         place = self.where_is(
             self.get_target_place(goal, target), status, airport_only=True)
-        print("-------------", place, place_t)
+        print("\t - Place & place_t", place, place_t)
         real_place = self.where_is(self.get_target_place(goal, target), status)
         for move in status.moves:
             print("\t- Move", move)
@@ -171,6 +177,7 @@ class DijPlanner(LogAgent):
                 moves.append((move, score))
         print("\t# Accepted moves:",
               sorted(moves, key=lambda elem: elem[1], reverse=True))
+        print("---###")
         return([move for move in sorted(moves, key=lambda elem: elem[1], reverse=True)])
 
     def resolve(self, status, goal, anction_list, target, place_t):
@@ -204,7 +211,8 @@ class DijPlanner(LogAgent):
                     if place_t in move:
                         moves.append(move)
                 if len(moves) == 0:
-                    moves = tmp_status.moves
+                    moves = [
+                        move for move in tmp_status.moves if move not in anction_list]
                 next_move = choice(moves)
                 clone = tmp_status.clone
                 clone.execute([next_move])
@@ -216,11 +224,14 @@ class DijPlanner(LogAgent):
                     tmp_status = clone
                     anction_list.append(next_move)
                     if next_move[0] == "load":
-                        reversed_moves.append(("unload", next_move[1], next_move[2]))
+                        reversed_moves.append(
+                            ("unload", next_move[1], next_move[2]))
                     elif next_move[0] == "unload":
-                        reversed_moves.append(("load", next_move[1], next_move[2]))
+                        reversed_moves.append(
+                            ("load", next_move[1], next_move[2]))
                     elif next_move[0] == "move":
-                        reversed_moves.append((next_move[0], next_move[1], next_move[3], next_move[2]))
+                        reversed_moves.append(
+                            (next_move[0], next_move[1], next_move[3], next_move[2]))
                 timer += 1
         if prec_ret == -1:
             return None
@@ -229,7 +240,7 @@ class DijPlanner(LogAgent):
         deep_steps = self.__num_steps
         # from time import sleep # For debugging
         while not self.check_single_goal(target, place_t, clone) and deep_steps > 0:
-            print(moves)
+            print("### MOVES", moves)
             action, value = moves.pop(0)
             clone.execute(action)
             anction_list.append(action)
@@ -239,7 +250,8 @@ class DijPlanner(LogAgent):
             moves = self.h_function(clone, goal, target, place_t, new_path)
             deep_steps -= 1
             # sleep(2) # For debugging
-        tmp_status = clone if self.check_single_goal(target, place_t, clone) else tmp_status
+        tmp_status = clone if self.check_single_goal(
+            target, place_t, clone) else tmp_status
         return tmp_status, self.check_single_goal(target, place_t, clone)
 
     def solve(self, status, goal):

@@ -381,28 +381,33 @@ class LogEnvironment(object):
                 if len(temp[key] & temp[compare]) != 0:
                     raise GoalNotPlausible()
 
-    def check_goal(self, goal_part=None):
+    def check_goal(self, target=None):
         """Check if the goal is reached."""
         results = True
-        temp_goal = self._goal
-        if goal_part is not None:
-            if isinstance(goal_part, dict):
-                temp_goal = list((value, key) for key, value in goal_part.items())
-            elif isinstance(goal_part, list):
-                temp_goal = [(value, key) for key, value in goal_part]
-            elif isinstance(goal_part, tuple):
-                temp_goal = [goal_part[1], goal_part[0]]
-        for objs, dir_ in temp_goal:
-            if dir_ in self._airports:
+        if target is None:
+            for objs, dir_ in self._goal:
+                if dir_ in self._airports:
+                    for obj in objs:
+                        results = results and obj in self._airports[dir_]
+                        if getattr(self, "_agent", False) and obj in self._airports[dir_]:
+                            self._agent.goals += 1
+                elif dir_ in self._airplanes:
+                    for obj in objs:
+                        results = results and obj in self._airplanes[dir_]
+                        if getattr(self, "_agent", False)and obj in self._airplanes[dir_]:
+                            self._agent.goals += 1
+        elif target is not None:
+            for objs, dir_ in self._goal:
                 for obj in objs:
-                    results = results and obj in self._airports[dir_]
-                    if getattr(self, "_agent", False) and obj in self._airports[dir_]:
-                        self._agent.goals += 1
-            elif dir_ in self._airplanes:
-                for obj in objs:
-                    results = results and obj in self._airplanes[dir_]
-                    if getattr(self, "_agent", False)and obj in self._airplanes[dir_]:
-                        self._agent.goals += 1
+                    if obj == target:
+                        if dir_ in self._airports:
+                            for obj in objs:
+                                results = results and obj in self._airports[dir_]
+                        elif dir_ in self._airplanes:
+                            for obj in objs:
+                                results = results and obj in self._airplanes[dir_]
+        else:
+            result = None
         return results
 
     def load(self, box, airplane_name):

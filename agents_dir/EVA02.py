@@ -2,6 +2,7 @@
 from __future__ import print_function, unicode_literals
 from . logEnvironmentModule import *
 from . errorObjs import *
+from heapq import nlargest
 
 import random
 from collections import deque
@@ -108,6 +109,75 @@ class EVA02(LogAgent):
                 relevance = relevance * 5"""
         return relevance
 
+    def get_relevance2(self, status, relevant_objs, move):
+        relevance = 0
+        #if we may unload something
+        if move[0] == "unload":
+            relevance += self.weighted_random([(1,1),(9,0)])
+            # if the box is relevant somehow
+            if move[1] in relevant_objs["boxes"]:
+                relevance += 100
+            # if the box is not relevant 
+            else:
+                # and the plane has enough space
+                if status.airplanes[move[2]].maxbox > len(status.airplanes[move[2]].boxes):
+                    #why should we ever unload it?
+                    relevance -= 1000
+                else:
+                    relevance += self.weighted_random([(5,1),(5,0)])
+            # if the plane is relevant somehow
+            if  move[2] in relevant_objs["planes"]:
+                #relevance = 1
+                #if the box is in the plane it should be
+                if move[1] in status.goal[move[2]]:
+                    #relevance = self.weighted_random([(1,1),(9,0)])
+                    # and the plane is not full of boxes
+                    if status.airplanes[move[2]].maxbox > len(status.airplanes[move[2]].boxes):
+                        relevance -= 1000
+        elif move[0] == "load":
+            relevance += self.weighted_random([(7,1),(3,0)])
+            #if the plane is somehow relevant
+            if  move[2] in relevant_objs["planes"]:
+                relevance += self.weighted_random([(7,1),(3,0)])
+                #if this plane should have this box
+                if move[1] in status.goal[move[2]]:
+                    #and there is space for it
+                    if status.airplanes[move[2]].maxbox > len(status.airplanes[move[2]].boxes):
+                        #take it!
+                        relevance += 100
+            #if te box is not relevant, never load it!
+            if move[1] not in relevant_objs["boxes"]:
+                relevance -= 1000
+            else:
+                # if the box is in the airport it should be 
+                # why should you load it to a plane?
+                for airport in status.airports:
+                    if airport in relevant_objs["airports"]:
+                        if move[1] in status.airports[airport].boxes:
+                            if move[1] in status.goal[airport]:
+                                relevance -= 1000
+        else:
+            relevance += self.weighted_random([(7,1),(3,0)])
+            #if the destination aiport is relevant
+            if move[3] in relevant_objs:
+                #if the airplane should go there
+                if move[1] in status.goal[move[3]]:
+                    #you probably want to send it there
+                    relevance += self.weighted_random([(20,100),(1,0)])
+            #if the source aiport is relevant
+            if move[2] in relevant_objs:
+                #if the airplane should stay there
+                if move[1] in status.goal[move[2]]:
+                    #you probably DON'T want to move it
+                    relevance -= self.weighted_random([(1,1),(20,1000)])   
+            """if move[3] in relevant_objs:
+                relevance = relevance + 10
+            if move[2] in relevant_objs:
+                relevance = relevance - 5
+            if move[1] in relevant_objs:
+                relevance = relevance * 5"""
+        return relevance
+
     def discovery_forwards(self, status, relevant_objs, stateMap):
         stat = status.clone
         list_of_actions = []
@@ -183,6 +253,89 @@ class EVA02(LogAgent):
         print(len(stateMap))
         return {'stateMap': stateMap, 'goal_hash': goal_hash, 'goal_state': goal_state, 'start_hash': start_hash, 'stat': stat}
 
+    def discovery_forwards2(self, status, relevant_objs, stateMap):
+        stat = status.clone
+        list_of_actions = []
+        new_moves = []
+        relevant_moves = []
+        relevances = []
+        mosse = []
+        output_moves = []
+        start_hash = hash(repr(stat))
+        foundEarlier = None
+        if start_hash not in stateMap:
+            stateMap[start_hash] = []
+        i = 0
+        maxDepth = 4
+        resetLimit = 2
+        while not stat.check_goal():
+            if i > resetLimit:
+                stat = clone.clone
+                print("\r\t", "Searching:", "*"*i, end='')
+                i = 0
+                resetLimit = resetLimit*1.3
+                if resetLimit > maxDepth:
+                    stat = status.clone
+                    resetLimit = 1
+                    maxDepth += 1
+            curr_hash = hash(repr(stat))
+            if curr_hash not in stateMap:
+                stateMap[curr_hash] = []
+            for move in stat.moves:
+                relevances.append(self.get_relevance2(status, relevant_objs, move))
+                mosse.append(move)
+            #indexes = range(len(relevances.values()))
+            #print("items:",relevances)
+            niceMoves = nlargest(3, enumerate(relevances), key=lambda x: x[1])
+            #print(niceMoves)
+            tmp= []
+            for m in niceMoves:
+                #print(m[0])
+                tmp.append(mosse[m[0]])
+            niceMoves = tmp
+            #print("nice MOVES:", niceMoves)
+            for move in niceMoves:
+                clone = stat.clone
+                clone.execute([move])
+                child_hash = hash(repr(clone))
+                if child_hash not in stateMap[curr_hash]:
+                    stateMap[curr_hash].append(child_hash)
+                    if move not in new_moves:
+                        new_moves.append(move)
+                if child_hash not in stateMap:
+                    stateMap[child_hash] = []
+                    stateMap[child_hash].append(curr_hash)
+                if clone.check_goal():
+                    print("OMGOMGOMGOMG")
+                    foundEarlier = move
+                    break
+            if foundEarlier:
+                move = foundEarlier
+            elif(len(new_moves) > 0):
+                move = random.choice(new_moves)
+            else:
+                i = i - self.weighted_random([(50,1),(50,0)])
+                move = random.choice(stat.moves)
+            #print(move)
+            stat.execute([move])
+            child_hash = hash(repr(stat))
+            #Per sicurezza...
+            if child_hash not in stateMap[curr_hash]:
+                stateMap[curr_hash].append(child_hash)
+            if child_hash not in stateMap:
+                stateMap[child_hash] = []
+                stateMap[child_hash].append(curr_hash)
+            new_moves = []
+            relevances = []
+            mosse = []
+            goal_state = stat.clone
+            goal_hash = hash(repr(stat))
+            i = i+1
+        #print(len(stateMap), goal_hash, hash(repr(goal_state)))
+        print(len(stateMap))
+        return {'stateMap': stateMap, 'goal_hash': goal_hash, 'goal_state': goal_state, 'start_hash': start_hash, 'stat': stat}
+
+
     def discovery_backwards(self, status, stateMap, start_hash, curr_hash):
         stat = status.clone
         goal_childs = len(status.moves)
@@ -244,12 +397,21 @@ class EVA02(LogAgent):
         best_path = []
         output_moves = []
 
-        tmp = self.discovery_forwards(status.clone, relevant_objs, stateMap)
+        tmp = self.discovery_forwards2(status.clone, relevant_objs, stateMap)
         stateMap = tmp["stateMap"]
         goal_state.append(tmp["goal_state"])
         start_hash = tmp["start_hash"]
         goal_hash.append(tmp["goal_hash"])
-        for x in range(int(len(goal_state[0].moves)/5)):
+        for x in range(int(len(goal_state[0].moves)/3)):
+        #for x in range(1):
+            tmp = self.discovery_forwards2(status.clone, relevant_objs, stateMap)
+            stateMap = tmp["stateMap"]
+            if tmp["goal_state"] not in goal_state:
+                goal_state.append(tmp["goal_state"])
+            if tmp["goal_hash"] not in goal_hash:
+                goal_hash.append(tmp["goal_hash"])
+        for x in range(int(len(goal_state[0].moves)/3)):
+        #for x in range(1):
             tmp = self.discovery_forwards(status.clone, relevant_objs, stateMap)
             stateMap = tmp["stateMap"]
             if tmp["goal_state"] not in goal_state:

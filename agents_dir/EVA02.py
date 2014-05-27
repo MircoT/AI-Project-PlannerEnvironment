@@ -122,7 +122,7 @@ class EVA02(LogAgent):
                 # and the plane has enough space
                 if status.airplanes[move[2]].maxbox > len(status.airplanes[move[2]].boxes):
                     #why should we ever unload it?
-                    relevance -= 1000
+                    relevance -= 10000
                 else:
                     relevance += self.weighted_random([(5,1),(5,0)])
             # if the plane is relevant somehow
@@ -133,7 +133,7 @@ class EVA02(LogAgent):
                     #relevance = self.weighted_random([(1,1),(9,0)])
                     # and the plane is not full of boxes
                     if status.airplanes[move[2]].maxbox > len(status.airplanes[move[2]].boxes):
-                        relevance -= 1000
+                        relevance -= 10000
         elif move[0] == "load":
             relevance += self.weighted_random([(7,1),(3,0)])
             #if the plane is somehow relevant
@@ -145,9 +145,9 @@ class EVA02(LogAgent):
                     if status.airplanes[move[2]].maxbox > len(status.airplanes[move[2]].boxes):
                         #take it!
                         relevance += 100
-            #if te box is not relevant, never load it!
+            #if the box is not relevant, never load it!
             if move[1] not in relevant_objs["boxes"]:
-                relevance -= 1000
+                relevance -= 10000
             else:
                 # if the box is in the airport it should be 
                 # why should you load it to a plane?
@@ -155,21 +155,22 @@ class EVA02(LogAgent):
                     if airport in relevant_objs["airports"]:
                         if move[1] in status.airports[airport].boxes:
                             if move[1] in status.goal[airport]:
-                                relevance -= 1000
+                                relevance -= 10000
         else:
-            relevance += self.weighted_random([(7,1),(3,0)])
+            relevance += self.weighted_random([(7,100),(3,0)])
+            relevance -= 10*status.airports[move[2]].neighbors[move[3]]
             #if the destination aiport is relevant
             if move[3] in relevant_objs:
                 #if the airplane should go there
                 if move[1] in status.goal[move[3]]:
                     #you probably want to send it there
-                    relevance += self.weighted_random([(20,100),(1,0)])
+                    relevance += self.weighted_random([(20,1000),(1,0)])
             #if the source aiport is relevant
             if move[2] in relevant_objs:
                 #if the airplane should stay there
                 if move[1] in status.goal[move[2]]:
                     #you probably DON'T want to move it
-                    relevance -= self.weighted_random([(1,1),(20,1000)])   
+                    relevance -= self.weighted_random([(1,1),(50,1000)])   
             """if move[3] in relevant_objs:
                 relevance = relevance + 10
             if move[2] in relevant_objs:
@@ -177,6 +178,15 @@ class EVA02(LogAgent):
             if move[1] in relevant_objs:
                 relevance = relevance * 5"""
         return relevance
+
+    def get_solution_cost(self, status, moves):
+        cost = 0
+        for move in moves:
+            if move[0] in ["unload", "load"]:
+                cost += 10
+            else:
+                cost += 10*status.airports[move[2]].neighbors[move[3]]
+        return cost
 
     def discovery_forwards(self, status, relevant_objs, stateMap):
         stat = status.clone
@@ -286,7 +296,7 @@ class EVA02(LogAgent):
                 mosse.append(move)
             #indexes = range(len(relevances.values()))
             #print("items:",relevances)
-            niceMoves = nlargest(3, enumerate(relevances), key=lambda x: x[1])
+            niceMoves = nlargest(5, enumerate(relevances), key=lambda x: x[1])
             #print(niceMoves)
             tmp= []
             for m in niceMoves:
@@ -306,7 +316,7 @@ class EVA02(LogAgent):
                     stateMap[child_hash] = []
                     stateMap[child_hash].append(curr_hash)
                 if clone.check_goal():
-                    print("OMGOMGOMGOMG")
+                    #print("OMGOMGOMGOMG")
                     foundEarlier = move
                     break
             if foundEarlier:
@@ -387,7 +397,7 @@ class EVA02(LogAgent):
             i = i+1
         print(len(stateMap))
         return  stateMap
-
+        
     def itr_solve(self, status):
         relevant_objs = self.get_relevant_objs(status)
         start_hash = hash(repr(status))
@@ -402,16 +412,16 @@ class EVA02(LogAgent):
         goal_state.append(tmp["goal_state"])
         start_hash = tmp["start_hash"]
         goal_hash.append(tmp["goal_hash"])
-        for x in range(int(len(goal_state[0].moves)/3)):
-        #for x in range(1):
+        #for x in range(int(len(goal_state[0].moves)/5)):
+        for x in range(1):
             tmp = self.discovery_forwards2(status.clone, relevant_objs, stateMap)
             stateMap = tmp["stateMap"]
             if tmp["goal_state"] not in goal_state:
                 goal_state.append(tmp["goal_state"])
             if tmp["goal_hash"] not in goal_hash:
                 goal_hash.append(tmp["goal_hash"])
-        for x in range(int(len(goal_state[0].moves)/3)):
-        #for x in range(1):
+        #for x in range(int(len(goal_state[0].moves)/5)):
+        for x in range(1):
             tmp = self.discovery_forwards(status.clone, relevant_objs, stateMap)
             stateMap = tmp["stateMap"]
             if tmp["goal_state"] not in goal_state:
@@ -428,6 +438,33 @@ class EVA02(LogAgent):
             best_path.append(self.search_shortest_path(stateMap, start_hash, goal_hash[i]))
         #for i in range(len(best_path)):
         #    print("Len of possible short path:", len(best_path[i]))
+        final_moves = []
+        for path in best_path:
+            clone = status.clone
+            for i in range(1, len(path)):
+                stat = clone.clone
+                for move in stat.moves:
+                    clone = stat.clone
+                    clone.execute([move])
+                    child_hash = hash(repr(clone))
+                    if path[i] == child_hash:
+                        output_moves.append(move)
+                        break
+            print("costo:",self.get_solution_cost(status, output_moves))
+            print ("lunghezza:",len(output_moves))
+            if len(final_moves) > 0:
+                if self.get_solution_cost(status, output_moves) < self.get_solution_cost(status, final_moves):
+                    final_moves = output_moves
+            else:
+                final_moves = output_moves
+            output_moves = []
+            #for move in output_moves:
+            #   print(move)
+
+
+
+
+
         best_path = min(best_path, key=len)
 
         clone = status.clone
@@ -442,7 +479,8 @@ class EVA02(LogAgent):
                     break
         for move in output_moves:
             print(move)
-        return output_moves
+        #return output_moves
+        return final_moves
 
     def search_shortest_path(self, graph, start, goal):
         """Find the shortest path from start to goal in graph (which must be a

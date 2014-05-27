@@ -29,13 +29,27 @@ class DijPlannerEvo(LogAgent):
             if target in objs:
                 return place
 
+    def resolve(self, status, goal, anction_list, target, t_place):
+        """Method that solve a specific goal."""
+        cur_status = status
+        reached = False
+        logging.debug("current target = %s | target place = %s", target, t_place)
+        return cur_status, reached
+
     def solve(self, status, goal):
         """Override of the solve method of the LogAgent."""
         logging.debug("START OF SOLVE METHOD")
         anction_list = list()
-        targetstuples = [TargetT(item, self.get_target_place(goal, item))
-                         for list_ in goal.values() for item in list_]
+        # Sorted by targets names.
+        targetstuples = sorted([TargetT(item, self.get_target_place(goal, item))
+                                for list_ in goal.values() for item in list_],
+                                reverse=True,
+                                key=lambda elem: elem[0])
         logging.debug("targetstuples = " + json.dumps(targetstuples, indent=4))
-        # TO DO
-        logging.debug("anction_list = " + json.dumps(anction_list, indent=4))
+        for target, t_place in targetstuples:
+            status, reached = self.resolve(
+                status, goal, anction_list, target, t_place)
+            if reached:
+                self.reached_goals.append((target, t_place))
+        logging.debug("anction_list = %s", json.dumps(anction_list, indent=4))
         return anction_list

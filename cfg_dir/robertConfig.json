@@ -1,6 +1,6 @@
 {
 	"initial_status": {
-		"airports": 5,
+		"airports": 4,
 		"airplanes": 20,
 		"boxes": 20,
 		"edges": {
@@ -53,5 +53,5 @@
 			}
 		}
 	},
-	"goal": ["Airplane_3, Airplane_4 in Airport_1", "Box_6, Box_7 in Airport_4", "Box_5 in Airport_3", "Airplane_2 in Airport_2", "Box_1 in Airport_2", "Airplane_1 in Airport_1", "Box_3, Box_4 in Airport_1", "Box_10, Box_9 in Airport_3"]
+	"goal": ["Box_10 in Airport_3"]
 }

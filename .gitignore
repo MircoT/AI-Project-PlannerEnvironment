@@ -51,3 +51,8 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
+agents_dir/EVA02.py
+agents_dir/EVA02.py
+agents_dir/EVA03.py
+agents_dir/EVA04.py
+agents_dir/EVA05.py

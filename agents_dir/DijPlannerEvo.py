@@ -60,6 +60,15 @@ class DijPlannerEvo(LogAgent):
                 return place
 
     @staticmethod
+    def check_single_goal(target, place_t, status):
+        """Check if a single goal is reached."""
+        if place_t in status.airports:
+            return target in status.airports[place_t]
+        elif place_t in status.airplanes:
+            return target in status.airplanes[place_t]
+        return False
+
+    @staticmethod
     def dijkstra(status, source, target):
         """Search a path from a source to a targer."""
         try:

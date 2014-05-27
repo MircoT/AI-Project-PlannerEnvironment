@@ -401,13 +401,11 @@ class LogEnvironment(object):
                 for obj in objs:
                     if obj == target:
                         if dir_ in self._airports:
-                            for obj in objs:
-                                results = results and obj in self._airports[dir_]
+                            results = results and obj in self._airports[dir_]
                         elif dir_ in self._airplanes:
-                            for obj in objs:
-                                results = results and obj in self._airplanes[dir_]
+                            results = results and obj in self._airplanes[dir_]
         else:
-            result = None
+            results = None
         return results
 
     def load(self, box, airplane_name):

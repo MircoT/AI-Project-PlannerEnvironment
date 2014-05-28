@@ -179,7 +179,7 @@ class EVA02(LogAgent):
                         #if it should be on this airport, let's not move from here..
                         if move[2] in relevant_objs["airports"]:
                             if box in status.goal[move[2]]:
-                                print("happens5!")
+                                #print("happens5!")
                                 relevance -= self.weighted_random([(1,1),(50,1000)])
 
             #if the source aiport is relevant

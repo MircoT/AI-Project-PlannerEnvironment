@@ -19,8 +19,8 @@ class DijPlannerEvo(LogAgent):
         super(DijPlannerEvo, self).__init__()
         # dict of the last actions (reversed) for each goal
         self.last_goals_moves = dict()
-        self.max_timer = 10
-        self.max_res = 1
+        self.max_timer = 75
+        self.max_res = 5
         logging.basicConfig(level=logging.INFO,
                             # filename='DijPlanner.log',
                             # filemode='w',

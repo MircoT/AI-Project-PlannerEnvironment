@@ -159,24 +159,34 @@ class DijPlannerEvo(LogAgent):
 
     def solve(self, status, goal):
         """Override of the solve method of the LogAgent."""
-        
+
         logging.debug("START OF SOLVE METHOD")
 
         cur_status = status
         anction_list = list()
-        
+        boxes_in_airplanes = list()
+        boxes_in_airports = list()
+        airplanes_in_airports = list()
+
+        for place, targets in goal.items():
+            for target in targets:
+                if target in status.boxes:
+                    if place in status.airplanes:
+                        boxes_in_airplanes.append(TargetT(target, place))
+                    elif place in status.airports:
+                        boxes_in_airports.append(TargetT(target, place))
+                elif target in status.airplanes:
+                    airplanes_in_airports.append(TargetT(target, place))
+
         # Sorted by targets names.
-        targetstuples = sorted([TargetT(item, self.get_target_place(goal, item))
-                                for list_ in goal.values() for item in list_],
-                               reverse=True,
-                               key=lambda elem: elem[0])
-        
+        targetstuples = boxes_in_airplanes + boxes_in_airports + airplanes_in_airports
+
         logging.debug("targetstuples = " + json.dumps(targetstuples, indent=4))
-        
-        for target, t_place in targetstuples:
-            cur_status, reached = self.resolve(
-                cur_status, goal, anction_list, target, t_place)
-            if reached:
-                self.reached_goals.append((target, t_place))
+
+        # for target, t_place in targetstuples:
+        #     cur_status, reached = self.resolve(
+        #         cur_status, goal, anction_list, target, t_place)
+        #     if reached:
+        #         self.reached_goals.append((target, t_place))
         logging.debug("anction_list = %s", json.dumps(anction_list, indent=4))
         return anction_list

@@ -17,8 +17,7 @@ class DijPlannerEvo(LogAgent):
 
     def __init__(self):
         super(DijPlannerEvo, self).__init__()
-        self.reached_goals = list()
-        self.__num_steps = 50
+        self.last_goals_moves = list()  # List of the last actions (reversed) for each goal
         logging.basicConfig(level=logging.DEBUG,
                             format="%(levelname)s - Method(%(funcName)s) at line %(lineno)s: %(message)s")
 

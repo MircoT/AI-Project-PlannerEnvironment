@@ -21,9 +21,9 @@ class DijPlannerEvo(LogAgent):
         self.last_goals_moves = dict()
         self.max_timer = 10
         self.max_res = 1
-        logging.basicConfig(level=logging.DEBUG,
-                            filename='DijPlanner.log',
-                            filemode='w',
+        logging.basicConfig(level=logging.INFO,
+                            # filename='DijPlanner.log',
+                            # filemode='w',
                             format="%(levelname)s - Method(%(funcName)s) at line %(lineno)s: %(message)s")
 
     @staticmethod

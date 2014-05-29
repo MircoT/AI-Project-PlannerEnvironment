@@ -29,7 +29,7 @@ class MyAgent(LogAgent):
                         continue
                     elif h == h2:
                         possible_moves.append(move)
-                print('OPS! RADOM!')
+                print('OPS! RANDOM!')
                 move = random.choice(possible_moves)
                 possible_moves = []
                 print(move)

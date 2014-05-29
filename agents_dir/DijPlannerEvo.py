@@ -22,8 +22,8 @@ class DijPlannerEvo(LogAgent):
         self.max_timer = 75
         self.max_res = 5
         logging.basicConfig(level=logging.INFO,
-                            # filename='DijPlanner.log',
-                            # filemode='w',
+                            filename='DijPlanner.log',
+                            filemode='w',
                             format="%(levelname)s - Method(%(funcName)s) at line %(lineno)s: %(message)s")
 
     @staticmethod
@@ -207,12 +207,12 @@ class DijPlannerEvo(LogAgent):
                 score += 5
                 for place, value in path:
                     if move[3] == place:
-                        score += 10*value
+                        score += 10 * value
             if t_place in move:
                 score += 10
             for var in reversed(range(0, len(neighbors))):
                 if neighbors[var] in neighbors:
-                    score += 10 + 10*var
+                    score += 10 + 10 * var
             for airplane in full_airplanes:
                 if airplane in move:
                     score += 10
@@ -255,7 +255,8 @@ class DijPlannerEvo(LogAgent):
         moves = list()
         real_place = self.which_airport(target, status)
         where_is = self.where_is(target, status)
-        logging.debug("t_place=%s | real_place=%s | where_is=%s | target=%s", t_place, real_place, where_is, target)
+        logging.debug("t_place=%s | real_place=%s | where_is=%s | target=%s",
+                      t_place, real_place, where_is, target)
         for move in status.moves:
             logging.debug("MOVE %s", move)
             score = 0
@@ -279,7 +280,7 @@ class DijPlannerEvo(LogAgent):
             if real_place in move:
                 logging.debug("real_place in move")
                 score += 25
-            if where_is in move:
+            if where_is in move and move[0] == "move":
                 logging.debug("where_is")
                 score += 25
             if t_place in move:
@@ -330,7 +331,7 @@ class DijPlannerEvo(LogAgent):
             dij_source = self.which_airport(target, clone)
             dij_target = self.which_airport(t_place, clone)
             logging.debug("dij_source = %s | dij_target = %s",
-                      dij_source, dij_target)
+                          dij_source, dij_target)
             dij_path = self.dijkstra(status, dij_source, dij_target)
             timer += 1
 
@@ -341,8 +342,7 @@ class DijPlannerEvo(LogAgent):
             cur_status = clone
             for move in moves_list:
                 anction_list.append(move)
-
-        return cur_status, True
+            return cur_status, True
 
     def solve(self, status, goal):
         """Override of the solve method of the LogAgent."""
@@ -369,8 +369,8 @@ class DijPlannerEvo(LogAgent):
         shuffle(boxes_in_airports)
         shuffle(airplanes_in_airports)
         # Sorted by targets names.
-        targetstuples = boxes_in_airplanes + \
-            boxes_in_airports + airplanes_in_airports
+        targetstuples = boxes_in_airports + \
+            boxes_in_airplanes + airplanes_in_airports
 
         logging.debug("targetstuples = " + json.dumps(targetstuples, indent=4))
 
@@ -382,6 +382,6 @@ class DijPlannerEvo(LogAgent):
         logging.debug("final status \n%s", cur_status)
         logging.debug("tartget not reached %s",
                       [(target, t_place) for (target, t_place) in targetstuples if (target, t_place) not in self.last_goals_moves.values()])
-        logging.debug("anction_list = %s", json.dumps(anction_list))
+        logging.debug("action_list = %s", json.dumps(anction_list))
         logging.debug("len anction_list = %s", len(anction_list))
         return anction_list

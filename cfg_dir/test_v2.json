@@ -1,0 +1,657 @@
+{
+    "goal": [
+        "Airplane_13, Airplane_27, Airplane_22, Airplane_26, Airplane_15, Airplane_19, Airplane_12, Airplane_1, Airplane_7, Airplane_21, Airplane_25, Airplane_18 in Airport_20", 
+        "Airplane_32, Airplane_5, Airplane_9, Airplane_6, Airplane_17, Airplane_24, Airplane_14, Airplane_2, Airplane_3, Airplane_34, Airplane_31, Airplane_16, Airplane_29, Airplane_33 in Airport_3", 
+        "Airplane_8, Airplane_23 in Airport_17", 
+        "Airplane_20, Airplane_10, Airplane_11, Airplane_4, Airplane_28 in Airport_17", 
+        "Box_17, Box_3, Box_10, Box_11, Box_19, Box_27, Box_28, Box_32 in Airport_14", 
+        "Airplane_30 in Airport_9", 
+        "Box_24 in Airport_20"
+    ], 
+    "initial_status": {
+        "airplanes": 34, 
+        "airports": 21, 
+        "boxes": 55, 
+        "edges": {
+            "Airport_1": {
+                "Airport_10": 66, 
+                "Airport_12": 23, 
+                "Airport_14": 10, 
+                "Airport_15": 68, 
+                "Airport_17": 3, 
+                "Airport_19": 62, 
+                "Airport_20": 94, 
+                "Airport_3": 20, 
+                "Airport_5": 53
+            }, 
+            "Airport_10": {
+                "Airport_1": 82, 
+                "Airport_13": 47, 
+                "Airport_15": 3, 
+                "Airport_16": 17, 
+                "Airport_17": 27, 
+                "Airport_18": 6, 
+                "Airport_19": 20, 
+                "Airport_20": 28, 
+                "Airport_21": 22, 
+                "Airport_4": 63, 
+                "Airport_5": 60, 
+                "Airport_6": 61
+            }, 
+            "Airport_11": {
+                "Airport_1": 65, 
+                "Airport_13": 41, 
+                "Airport_14": 23, 
+                "Airport_16": 96, 
+                "Airport_18": 14, 
+                "Airport_2": 40, 
+                "Airport_20": 93, 
+                "Airport_6": 50, 
+                "Airport_7": 93, 
+                "Airport_9": 68
+            }, 
+            "Airport_12": {
+                "Airport_11": 26, 
+                "Airport_15": 31, 
+                "Airport_18": 63, 
+                "Airport_19": 92, 
+                "Airport_2": 40, 
+                "Airport_3": 18, 
+                "Airport_5": 36, 
+                "Airport_6": 6, 
+                "Airport_7": 1
+            }, 
+            "Airport_13": {
+                "Airport_10": 30, 
+                "Airport_11": 49, 
+                "Airport_12": 93, 
+                "Airport_15": 28, 
+                "Airport_17": 1, 
+                "Airport_19": 66, 
+                "Airport_2": 19, 
+                "Airport_20": 100, 
+                "Airport_21": 72, 
+                "Airport_4": 66, 
+                "Airport_8": 60, 
+                "Airport_9": 28
+            }, 
+            "Airport_14": {
+                "Airport_1": 25, 
+                "Airport_10": 73, 
+                "Airport_11": 51, 
+                "Airport_13": 94, 
+                "Airport_16": 27, 
+                "Airport_17": 76, 
+                "Airport_18": 23, 
+                "Airport_20": 25, 
+                "Airport_4": 26, 
+                "Airport_5": 21, 
+                "Airport_8": 93, 
+                "Airport_9": 19
+            }, 
+            "Airport_15": {
+                "Airport_1": 25, 
+                "Airport_10": 54, 
+                "Airport_16": 95, 
+                "Airport_19": 43, 
+                "Airport_2": 45, 
+                "Airport_21": 25, 
+                "Airport_3": 47, 
+                "Airport_6": 40, 
+                "Airport_7": 10, 
+                "Airport_8": 59, 
+                "Airport_9": 84
+            }, 
+            "Airport_16": {
+                "Airport_1": 21, 
+                "Airport_10": 3, 
+                "Airport_13": 22, 
+                "Airport_14": 57, 
+                "Airport_17": 25, 
+                "Airport_18": 94, 
+                "Airport_19": 94, 
+                "Airport_2": 48, 
+                "Airport_21": 23, 
+                "Airport_4": 45, 
+                "Airport_6": 51, 
+                "Airport_7": 54, 
+                "Airport_8": 76, 
+                "Airport_9": 18
+            }, 
+            "Airport_17": {
+                "Airport_1": 25, 
+                "Airport_10": 5, 
+                "Airport_11": 57, 
+                "Airport_13": 75, 
+                "Airport_19": 64, 
+                "Airport_20": 26, 
+                "Airport_5": 67, 
+                "Airport_7": 55
+            }, 
+            "Airport_18": {
+                "Airport_1": 59, 
+                "Airport_11": 86, 
+                "Airport_12": 36, 
+                "Airport_16": 16, 
+                "Airport_20": 100, 
+                "Airport_21": 85, 
+                "Airport_4": 40, 
+                "Airport_6": 98, 
+                "Airport_8": 22
+            }, 
+            "Airport_19": {
+                "Airport_10": 48, 
+                "Airport_11": 6, 
+                "Airport_13": 89, 
+                "Airport_2": 60, 
+                "Airport_20": 22, 
+                "Airport_3": 76, 
+                "Airport_4": 10, 
+                "Airport_6": 74, 
+                "Airport_7": 23, 
+                "Airport_8": 33, 
+                "Airport_9": 86
+            }, 
+            "Airport_2": {
+                "Airport_10": 3, 
+                "Airport_14": 60, 
+                "Airport_16": 77, 
+                "Airport_17": 37, 
+                "Airport_19": 33, 
+                "Airport_3": 64, 
+                "Airport_4": 42, 
+                "Airport_7": 1
+            }, 
+            "Airport_20": {
+                "Airport_1": 69, 
+                "Airport_10": 71, 
+                "Airport_11": 58, 
+                "Airport_12": 80, 
+                "Airport_14": 57, 
+                "Airport_15": 74, 
+                "Airport_16": 28, 
+                "Airport_19": 2, 
+                "Airport_2": 34, 
+                "Airport_21": 77, 
+                "Airport_4": 96, 
+                "Airport_5": 81, 
+                "Airport_6": 15, 
+                "Airport_7": 1, 
+                "Airport_8": 66
+            }, 
+            "Airport_21": {
+                "Airport_1": 47, 
+                "Airport_11": 93, 
+                "Airport_12": 2, 
+                "Airport_13": 9, 
+                "Airport_15": 23, 
+                "Airport_16": 54, 
+                "Airport_18": 31, 
+                "Airport_2": 94, 
+                "Airport_5": 87, 
+                "Airport_7": 52, 
+                "Airport_8": 46
+            }, 
+            "Airport_3": {
+                "Airport_1": 6, 
+                "Airport_10": 65, 
+                "Airport_12": 87, 
+                "Airport_14": 39, 
+                "Airport_16": 61, 
+                "Airport_2": 57, 
+                "Airport_21": 99, 
+                "Airport_4": 41, 
+                "Airport_8": 27, 
+                "Airport_9": 28
+            }, 
+            "Airport_4": {
+                "Airport_10": 77, 
+                "Airport_11": 86, 
+                "Airport_13": 30, 
+                "Airport_15": 92, 
+                "Airport_17": 62, 
+                "Airport_18": 26, 
+                "Airport_2": 10, 
+                "Airport_20": 66, 
+                "Airport_21": 18, 
+                "Airport_5": 89, 
+                "Airport_7": 43, 
+                "Airport_8": 96, 
+                "Airport_9": 24
+            }, 
+            "Airport_5": {
+                "Airport_13": 84, 
+                "Airport_14": 77, 
+                "Airport_16": 81, 
+                "Airport_2": 54, 
+                "Airport_21": 19, 
+                "Airport_7": 2
+            }, 
+            "Airport_6": {
+                "Airport_1": 88, 
+                "Airport_14": 82, 
+                "Airport_18": 100, 
+                "Airport_19": 43, 
+                "Airport_21": 38, 
+                "Airport_9": 39
+            }, 
+            "Airport_7": {
+                "Airport_1": 83, 
+                "Airport_11": 95, 
+                "Airport_12": 18, 
+                "Airport_13": 50, 
+                "Airport_17": 24, 
+                "Airport_18": 36, 
+                "Airport_19": 64, 
+                "Airport_21": 3, 
+                "Airport_3": 7, 
+                "Airport_4": 40, 
+                "Airport_6": 3, 
+                "Airport_9": 98
+            }, 
+            "Airport_8": {
+                "Airport_10": 41, 
+                "Airport_11": 50, 
+                "Airport_12": 75, 
+                "Airport_13": 23, 
+                "Airport_14": 7, 
+                "Airport_16": 96, 
+                "Airport_18": 40, 
+                "Airport_19": 92, 
+                "Airport_20": 58, 
+                "Airport_21": 37, 
+                "Airport_5": 70, 
+                "Airport_6": 3
+            }, 
+            "Airport_9": {
+                "Airport_10": 6, 
+                "Airport_15": 41, 
+                "Airport_16": 23, 
+                "Airport_18": 94, 
+                "Airport_2": 96, 
+                "Airport_21": 20, 
+                "Airport_3": 87, 
+                "Airport_5": 6, 
+                "Airport_8": 61
+            }
+        }, 
+        "vertices": {
+            "Airport_1": {
+                "airplanes": {
+                    "Airplane_1": {
+                        "boxes": [], 
+                        "maxbox": 15
+                    }, 
+                    "Airplane_12": {
+                        "boxes": [
+                            "Box_33", 
+                            "Box_53", 
+                            "Box_27"
+                        ], 
+                        "maxbox": 10
+                    }, 
+                    "Airplane_13": {
+                        "boxes": [], 
+                        "maxbox": 9
+                    }, 
+                    "Airplane_16": {
+                        "boxes": [], 
+                        "maxbox": 24
+                    }, 
+                    "Airplane_18": {
+                        "boxes": [
+                            "Box_3", 
+                            "Box_4", 
+                            "Box_48"
+                        ], 
+                        "maxbox": 7
+                    }, 
+                    "Airplane_19": {
+                        "boxes": [], 
+                        "maxbox": 17
+                    }, 
+                    "Airplane_2": {
+                        "boxes": [], 
+                        "maxbox": 6
+                    }, 
+                    "Airplane_20": {
+                        "boxes": [], 
+                        "maxbox": 13
+                    }, 
+                    "Airplane_23": {
+                        "boxes": [], 
+                        "maxbox": 11
+                    }, 
+                    "Airplane_29": {
+                        "boxes": [], 
+                        "maxbox": 24
+                    }, 
+                    "Airplane_3": {
+                        "boxes": [
+                            "Box_2", 
+                            "Box_18"
+                        ], 
+                        "maxbox": 3
+                    }, 
+                    "Airplane_30": {
+                        "boxes": [
+                            "Box_9", 
+                            "Box_31", 
+                            "Box_45"
+                        ], 
+                        "maxbox": 4
+                    }, 
+                    "Airplane_32": {
+                        "boxes": [], 
+                        "maxbox": 8
+                    }, 
+                    "Airplane_4": {
+                        "boxes": [], 
+                        "maxbox": 22
+                    }, 
+                    "Airplane_7": {
+                        "boxes": [], 
+                        "maxbox": 3
+                    }, 
+                    "Airplane_9": {
+                        "boxes": [], 
+                        "maxbox": 22
+                    }
+                }, 
+                "boxes": [
+                    "Box_39", 
+                    "Box_15", 
+                    "Box_12", 
+                    "Box_13", 
+                    "Box_54", 
+                    "Box_34", 
+                    "Box_38", 
+                    "Box_46", 
+                    "Box_44", 
+                    "Box_35", 
+                    "Box_41", 
+                    "Box_40", 
+                    "Box_49", 
+                    "Box_36", 
+                    "Box_19", 
+                    "Box_7", 
+                    "Box_25", 
+                    "Box_32", 
+                    "Box_28", 
+                    "Box_52", 
+                    "Box_21", 
+                    "Box_6", 
+                    "Box_1", 
+                    "Box_8", 
+                    "Box_16", 
+                    "Box_10", 
+                    "Box_29", 
+                    "Box_24", 
+                    "Box_26", 
+                    "Box_51", 
+                    "Box_47", 
+                    "Box_55", 
+                    "Box_11", 
+                    "Box_37", 
+                    "Box_17", 
+                    "Box_14", 
+                    "Box_42", 
+                    "Box_43", 
+                    "Box_50"
+                ], 
+                "position": [
+                    61, 
+                    89
+                ]
+            }, 
+            "Airport_10": {
+                "airplanes": {}, 
+                "boxes": [], 
+                "position": [
+                    45, 
+                    99
+                ]
+            }, 
+            "Airport_11": {
+                "airplanes": {
+                    "Airplane_6": {
+                        "boxes": [], 
+                        "maxbox": 21
+                    }
+                }, 
+                "boxes": [], 
+                "position": [
+                    62, 
+                    98
+                ]
+            }, 
+            "Airport_12": {
+                "airplanes": {}, 
+                "boxes": [], 
+                "position": [
+                    27, 
+                    69
+                ]
+            }, 
+            "Airport_13": {
+                "airplanes": {
+                    "Airplane_14": {
+                        "boxes": [], 
+                        "maxbox": 1
+                    }
+                }, 
+                "boxes": [], 
+                "position": [
+                    8, 
+                    64
+                ]
+            }, 
+            "Airport_14": {
+                "airplanes": {
+                    "Airplane_27": {
+                        "boxes": [], 
+                        "maxbox": 5
+                    }
+                }, 
+                "boxes": [], 
+                "position": [
+                    27, 
+                    88
+                ]
+            }, 
+            "Airport_15": {
+                "airplanes": {}, 
+                "boxes": [], 
+                "position": [
+                    50, 
+                    66
+                ]
+            }, 
+            "Airport_16": {
+                "airplanes": {
+                    "Airplane_25": {
+                        "boxes": [], 
+                        "maxbox": 8
+                    }
+                }, 
+                "boxes": [], 
+                "position": [
+                    54, 
+                    31
+                ]
+            }, 
+            "Airport_17": {
+                "airplanes": {
+                    "Airplane_26": {
+                        "maxbox": 24
+                    }
+                }, 
+                "boxes": [], 
+                "position": [
+                    14, 
+                    29
+                ]
+            }, 
+            "Airport_18": {
+                "airplanes": {
+                    "Airplane_17": {
+                        "maxbox": 23
+                    }
+                }, 
+                "boxes": [], 
+                "position": [
+                    57, 
+                    81
+                ]
+            }, 
+            "Airport_19": {
+                "airplanes": {
+                    "Airplane_15": {
+                        "boxes": [], 
+                        "maxbox": 16
+                    }
+                }, 
+                "boxes": [], 
+                "position": [
+                    44, 
+                    22
+                ]
+            }, 
+            "Airport_2": {
+                "airplanes": {
+                    "Airplane_22": {
+                        "maxbox": 13
+                    }, 
+                    "Airplane_24": {
+                        "boxes": [], 
+                        "maxbox": 4
+                    }, 
+                    "Airplane_31": {
+                        "boxes": [], 
+                        "maxbox": 9
+                    }, 
+                    "Airplane_5": {
+                        "boxes": [], 
+                        "maxbox": 16
+                    }
+                }, 
+                "boxes": [
+                    "Box_23", 
+                    "Box_30", 
+                    "Box_5"
+                ], 
+                "position": [
+                    61, 
+                    13
+                ]
+            }, 
+            "Airport_20": {
+                "airplanes": {
+                    "Airplane_11": {
+                        "boxes": [], 
+                        "maxbox": 6
+                    }
+                }, 
+                "boxes": [], 
+                "position": [
+                    60, 
+                    23
+                ]
+            }, 
+            "Airport_21": {
+                "airplanes": {
+                    "Airplane_10": {
+                        "boxes": [], 
+                        "maxbox": 4
+                    }
+                }, 
+                "boxes": [], 
+                "position": [
+                    50, 
+                    81
+                ]
+            }, 
+            "Airport_3": {
+                "airplanes": {}, 
+                "boxes": [
+                    "Box_20", 
+                    "Box_22"
+                ], 
+                "position": [
+                    11, 
+                    0
+                ]
+            }, 
+            "Airport_4": {
+                "airplanes": {
+                    "Airplane_33": {
+                        "boxes": [], 
+                        "maxbox": 6
+                    }
+                }, 
+                "boxes": [], 
+                "position": [
+                    9, 
+                    97
+                ]
+            }, 
+            "Airport_5": {
+                "airplanes": {}, 
+                "boxes": [], 
+                "position": [
+                    56, 
+                    72
+                ]
+            }, 
+            "Airport_6": {
+                "airplanes": {}, 
+                "boxes": [], 
+                "position": [
+                    40, 
+                    11
+                ]
+            }, 
+            "Airport_7": {
+                "airplanes": {
+                    "Airplane_8": {
+                        "maxbox": 7
+                    }
+                }, 
+                "boxes": [], 
+                "position": [
+                    67, 
+                    90
+                ]
+            }, 
+            "Airport_8": {
+                "airplanes": {
+                    "Airplane_28": {
+                        "boxes": [], 
+                        "maxbox": 12
+                    }
+                }, 
+                "boxes": [], 
+                "position": [
+                    83, 
+                    97
+                ]
+            }, 
+            "Airport_9": {
+                "airplanes": {
+                    "Airplane_21": {
+                        "maxbox": 25
+                    }, 
+                    "Airplane_34": {
+                        "boxes": [], 
+                        "maxbox": 11
+                    }
+                }, 
+                "boxes": [], 
+                "position": [
+                    51, 
+                    49
+                ]
+            }
+        }
+    }
+}

@@ -31,6 +31,17 @@ python main.py [-c cfg_list] [-a agents_list]
 python main.py -c testconfig_simple.json testconfig.json -a MyAgent
 ```
 
+##Generating random maps
+
+This module comes with a handy random map generator. The sysntax to use it is as follows:
+```bash
+python cfg_generator.py config_file_name num_airports num_airplanes num_boxes min_num_of_goals
+```
+This command will create a `config_file_name.json` file under `\cfg_dir`. There is no need to 
+add .json at the end of the file name.
+
+Please note that `cfg_generator.py` will always overwrite files with the same name you enter.
+
 ## Contributing
 
 Contributions are welcome, so please feel free to fix bugs, improve things, provide documentation. 

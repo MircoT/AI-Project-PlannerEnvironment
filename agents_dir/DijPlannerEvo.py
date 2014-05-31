@@ -19,11 +19,11 @@ class DijPlannerEvo(LogAgent):
         super(DijPlannerEvo, self).__init__()
         # dict of the last actions (reversed) for each goal
         self.last_goals_moves = dict()
-        self.max_timer = 75
-        self.max_res = 5
+        self.max_timer = 100
+        self.max_res = 6
         logging.basicConfig(level=logging.INFO,
-                            filename='DijPlanner.log',
-                            filemode='w',
+                            # filename='DijPlanner.log',
+                            # filemode='w',
                             format="%(levelname)s - Method(%(funcName)s) at line %(lineno)s: %(message)s")
 
     @staticmethod
@@ -363,6 +363,7 @@ class DijPlannerEvo(LogAgent):
                     elif place in status.airports:
                         boxes_in_airports.append(TargetT(target, place))
                 elif target in status.airplanes:
+                    logging.debug(target)
                     airplanes_in_airports.append(TargetT(target, place))
 
         shuffle(boxes_in_airplanes)
@@ -378,7 +379,8 @@ class DijPlannerEvo(LogAgent):
             cur_status, reached = self.resolve(
                 cur_status, goal, anction_list, target, t_place)
             if reached:
-                self.last_goals_moves[anction_list[-1]] = (target, t_place)
+                if len(anction_list) != 0:
+                    self.last_goals_moves[anction_list[-1]] = (target, t_place)
         logging.debug("final status \n%s", cur_status)
         logging.debug("tartget not reached %s",
                       [(target, t_place) for (target, t_place) in targetstuples if (target, t_place) not in self.last_goals_moves.values()])

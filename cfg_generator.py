@@ -162,11 +162,13 @@ if __name__ == '__main__':
                       "You're wasting your time, dude!",
                       "If this is your best I'm upset!",
                       "Do you read the --help advice?"]
-    if len(argv) != 6:
+    
+    if len(argv) == 2 and argv[1] == "--help":
         print(help_string)
         exit(0)
-    elif len(argv) == 2 and argv[1] == "--help":
+    elif len(argv) != 6:
         print(help_string)
+        print("\n...\n\nNOTE: {0}".format(str(choice(random_strings))))
         exit(0)
     elif len(argv) == 6:
         try:

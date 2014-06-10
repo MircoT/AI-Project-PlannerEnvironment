@@ -21,6 +21,8 @@ class DijPlannerEvo(LogAgent):
         self.last_goals_moves = dict()
         self.max_timer = 100
         self.max_res = 6
+        # To match a string in an iterable (tuple or list)
+        self.compare = lambda source, items: any(map(lambda elm: elm == source, items))
         logging.basicConfig(level=logging.INFO,
                             # filename='DijPlanner.log',
                             # filemode='w',
@@ -146,6 +148,18 @@ class DijPlannerEvo(LogAgent):
 
         return result
 
+    def __reverse_last_actions(self):
+        """Return the last actions reversed except for the move actions.
+        Move actions are not useful on heuristic.
+        """
+        actions = list()
+        for action in self.last_goals_moves:
+            if action[0] == "load":
+                actions.append(("unload", action[1], action[2]))
+            elif action[0] == "unload":
+                actions.append(("load", action[1], action[2]))
+        return actions
+
     def __verify_prec(self, status, goal, target, dij_path):
         """Verifies preconditions.
 
@@ -197,26 +211,27 @@ class DijPlannerEvo(LogAgent):
         for airplane_name, airplane_obj in status.airplanes.items():
             if len(airplane_obj.boxes) == airplane_obj.maxbox:
                 full_airplanes.append(airplane_name)
+        reversed_last_moves = self.__reverse_last_actions()
         for move in status.moves:
             score = 0
-            if move in self.last_goals_moves:
+            if self.compare(move, reversed_last_moves):
                 score -= 250
-            if move[0] == "load":
+            if self.compare(move[0], "load"):
                 score -= 100
-            if move[0] == "move":
+            if self.compare(move[0], "move"):
                 score += 5
                 for place, value in path:
                     if move[3] == place:
                         score += 10 * value
-            if t_place in move:
+            if self.compare(t_place, move):
                 score += 10
             for var in reversed(range(0, len(neighbors))):
                 if neighbors[var] in neighbors:
                     score += 10 + 10 * var
             for airplane in full_airplanes:
-                if airplane in move:
+                if self.compare(airplane, move):
                     score += 10
-                if move[0] == "unload":
+                if self.compare(move[0], "unload"):
                     score += 50
             moves_list.append((move, score))
         moves_list = list(sorted([(move, score)
@@ -260,7 +275,7 @@ class DijPlannerEvo(LogAgent):
         for move in status.moves:
             logging.debug("MOVE %s", move)
             score = 0
-            if target in move:
+            if self.compare(target, move):
                 logging.debug("target in move")
                 score += 100
                 if "load" in move:
@@ -277,17 +292,17 @@ class DijPlannerEvo(LogAgent):
                     else:
                         score -= 15
                     score -= 10
-            if real_place in move:
+            if self.compare(real_place, move):
                 logging.debug("real_place in move")
                 score += 25
-            if where_is in move and move[0] == "move":
+            if self.compare(where_is, move) and move[0] == "move":
                 logging.debug("where_is")
                 score += 25
-            if t_place in move:
+            if self.compare(t_place, move):
                 logging.debug("t_place in move")
                 score += 25
             for node, dist in path:
-                if node in move:
+                if self.compare(node, move):
                     logging.debug("node dist")
                     score += dist
             if score != 0:

@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function
 import json
+import time
 import codecs
 from . errorObjs import *
 from collections import namedtuple, defaultdict
@@ -182,7 +183,7 @@ class LogAgent(object):
         pass
 
     def get_formatted_score(self, num_goals):
-        return "Score of {0} in {1} moves! {2}/{3} goals reached!".format(self.score, self.moves, self.goals, num_goals)
+        return "Score of {0} in {1} moves. {2}/{3} goals reached.".format(self.score, self.moves, self.goals, num_goals)
 
 
 class LogEnvironment(object):
@@ -517,12 +518,16 @@ class LogEnvManager(object):
                 new_env = LogEnvironment(environment)
                 new_env.add_agent(agent_classes[agent_name]())
                 self.__data[agent_name].append((environment, new_env))
+        self.__times = dict()
 
     def execute(self):
         """Execute for every agent every environment."""
-        for env_l in self.__data.values():
+        for agent_name, env_l in self.__data.items():
             for env_t in env_l:
+                start_time = time.time()
                 env_t[1].execute()
+                final_time = time.time() - start_time
+                self.__times[(agent_name, env_t[0])] = final_time
 
     def get_score(self):
         """Show all results."""
@@ -530,5 +535,5 @@ class LogEnvManager(object):
         for agent_name, env_l in self.__data.items():
             print("Agent: {0} -----".format(agent_name))
             for env_name, env in env_l:
-                print("\t- {0} -> {1}".format(env_name, env.formatted_score()))
+                print("\t- {0} -> {1} Time elapsed : {2:.3f} seconds".format(env_name, env.formatted_score(), self.__times[(agent_name, env_name)]))
             print("EndAgent -----")

@@ -11,7 +11,6 @@ from collections import deque
 class EVA13(LogAgent):
 
     """
-
     EVA13 LogAgent by Robert Parcus, 2014
     State space search using a variant of Uniform Cost Search (UCS).
 
@@ -20,7 +19,7 @@ class EVA13(LogAgent):
 
     We do some graph prunning.
 
-    We use an heuristic C() to calculate actions cost up to that result.
+    We use an heuristic C() to calculate actions cost up to that partial result.
 
     We use an heuristic D() to estimate the distance between a certain
     status and the goal. It IS a semplification and it WILL underestimate
@@ -29,6 +28,13 @@ class EVA13(LogAgent):
     If H(x) = C(x) + D(x) is the total score of partial solution x, then
     we execute our expansions in ascending order starting from the partial
     solution with min(H(x)) each time, among those in the fringe.
+
+    EVA13 will explore all solutions of equal, minimal cost until it reaches a
+    goal state.
+
+                            *****IMPORTANT*****
+    This agent needs module priodict on its same folder.
+                            *******************
     """
 
     def __init__(self):
@@ -37,7 +43,6 @@ class EVA13(LogAgent):
     class NotFound(Exception): pass
 
     def solve(self, status, goal):      
-        print("YEAH!!")
         start_hash = hash(repr(status))
         stateMap = [start_hash]
         return self.discovery_forwards(status.clone, stateMap)
@@ -53,9 +58,8 @@ class EVA13(LogAgent):
         relevant_objs = self.get_relevant_objs(status)
         distanceMap = self.make_airports_map(status)
 
-        print("\n"*5)
+        print("\n"*2)
         print("*"*60)
-        print("\tUNIFORM COST SEARCH: a variant of BFS")
         print("\t", self.__doc__)
         print("\n"*2)
 
@@ -85,7 +89,8 @@ class EVA13(LogAgent):
                             # finally we insert the move on it's ordered position
                             fringe.insert(position, new_move)
                         if child.check_goal():
-                            print("\n"*2)
+                            print("\n")
+                            print("*"*60)
                             return new_move
             stat = status.clone
             # here we pop(0). From the left, like in BFS.
@@ -93,7 +98,8 @@ class EVA13(LogAgent):
             # and we trow away the current_move cost from the list.
             print("\r\t","Current score:", cost_list.pop(0), "Fringe size:", len(fringe), "\t\t", end='')
             stat.execute(current_moves)
-        print("\n"*2)
+        print("\n")
+        print("*"*60)
         return current_moves
 
     def get_relevant_objs(self, status):
@@ -125,7 +131,7 @@ class EVA13(LogAgent):
             mappa[airport] = {}
             for neighbour, distance in status.airports[airport]._neighbors.items():
                 mappa[airport].update({neighbour: distance})
-        print("mappa!", mappa)
+        #print("mappa!", mappa)
         # we get the distance of between all the airports
         for airport in status.airports:
             distanceMap[airport] = self.Dijkstra(mappa, airport)[0]
